@@ -82,40 +82,35 @@ function showMole(hole) {
   // 随机停留 800~1400ms 后自动隐藏
   const stayMs = 800 + Math.random() * 600;
   const hideId = setTimeout(() => {
-    // guard：若已被玩家命中（active 已移除），跳过，避免产生多余调度链
+    // guard：若已被玩家命中（active 已移除），跳过
     if (!hole.classList.contains('active')) return;
     hole.classList.remove('active');
     gameState.activeMoles.delete(hole);
-    scheduleNextMole(); // 链 A 在此继续
+    // 不调用 scheduleNextMole，链由 scheduleNextMole 自身管理
   }, stayMs);
 
   gameState.timers.push(hideId);
 }
 
-// 随机选一个空闲洞让地鼠出现；调用 showMole 后继续维持链 B
+// 持续调度链：每隔随机时间尝试让一只地鼠出现，然后继续下一次调度
 function scheduleNextMole() {
   if (!gameState.isRunning) return;
 
-  const delayMs = 600 + Math.random() * 600; // 600~1200ms 后选下一个洞
+  const delayMs = 600 + Math.random() * 600; // 600~1200ms 后尝试出现地鼠
 
   const schedId = setTimeout(() => {
     if (!gameState.isRunning) return;
 
-    // 已达最大并发数（2）则等 300ms 后重试（固定延迟，与设计规格一致）
-    if (gameState.activeMoles.size >= 2) {
-      const retryId = setTimeout(scheduleNextMole, 300);
-      gameState.timers.push(retryId);
-      return;
+    // 有空位则随机选一个洞让地鼠出现
+    if (gameState.activeMoles.size < 2) {
+      const idleHoles = holes.filter(h => !gameState.activeMoles.has(h));
+      if (idleHoles.length > 0) {
+        const hole = idleHoles[Math.floor(Math.random() * idleHoles.length)];
+        showMole(hole);
+      }
     }
 
-    // 从空闲洞中随机选一个
-    const idleHoles = holes.filter(h => !gameState.activeMoles.has(h));
-    if (idleHoles.length > 0) {
-      const hole = idleHoles[Math.floor(Math.random() * idleHoles.length)];
-      showMole(hole); // 链 A：showMole 内部负责本次地鼠隐藏后的调度
-    }
-
-    // 链 B：scheduleNextMole 自身在调用 showMole 后继续延续
+    // 无论是否出现地鼠，都继续本链的下一次调度
     scheduleNextMole();
   }, delayMs);
 
