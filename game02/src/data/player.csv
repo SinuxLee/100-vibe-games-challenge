@@ -1,0 +1,6 @@
+key,value,desc
+PLAYER_SPEED,200,Player movement speed (px/s)
+PLAYER_MAX_HP,100,Player starting max HP
+PLAYER_PICKUP_RANGE,120,XP orb attraction range (px)
+PLAYER_INVINCIBLE_MS,500,Invincibility duration after hit (ms)
+PLAYER_SIZE,20,Player collision circle radius (px)

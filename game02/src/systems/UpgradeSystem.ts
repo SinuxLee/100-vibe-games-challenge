@@ -1,5 +1,8 @@
 import { Player } from '../entities/Player';
 import { WeaponSystem } from './WeaponSystem';
+import { parseCsv } from '../utils/csvLoader';
+import upgradeCsv from '../data/upgrade.csv?raw';
+import Phaser from 'phaser';
 
 export interface UpgradeDef {
   id: string;
@@ -10,64 +13,44 @@ export interface UpgradeDef {
   apply: (player: Player, weapons: WeaponSystem) => void;
 }
 
-const upgradePool: UpgradeDef[] = [
-  {
-    id: 'damage_up',
-    name: 'Power Shot',
-    description: '+25% bullet damage',
-    maxLevel: 5,
+function buildApplyFn(type: string, stat: string, factor: number): (p: Player, w: WeaponSystem) => void {
+  if (type === 'player' && stat === 'speed') {
+    return (p) => { p.speed = Math.floor(p.speed * factor); };
+  }
+  if (type === 'player' && stat === 'maxHp') {
+    return (p) => { p.maxHp += factor; p.hp = Math.min(p.hp + factor, p.maxHp); };
+  }
+  if (type === 'weapon' && stat === 'damage') {
+    return (_p, w) => { w.weapons[0].damage = Math.floor(w.weapons[0].damage * factor); };
+  }
+  if (type === 'weapon' && stat === 'fireRate') {
+    return (_p, w) => { w.weapons[0].fireRate = Math.floor(w.weapons[0].fireRate * factor); };
+  }
+  if (type === 'weapon' && stat === 'bulletCount') {
+    return (_p, w) => { w.weapons[0].bulletCount += factor; };
+  }
+  if (type === 'weapon' && stat === 'pierce') {
+    return (_p, w) => { w.weapons[0].pierce += factor; };
+  }
+  if (type === 'weapon' && stat === 'bulletSpeed') {
+    return (_p, w) => { w.weapons[0].bulletSpeed = Math.floor(w.weapons[0].bulletSpeed * factor); };
+  }
+  return () => {};
+}
+
+function loadUpgradePool(): UpgradeDef[] {
+  const rows = parseCsv(upgradeCsv);
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    maxLevel: Number(row.maxLevel),
     currentLevel: 0,
-    apply: (_p, w) => { w.weapons[0].damage = Math.floor(w.weapons[0].damage * 1.25); },
-  },
-  {
-    id: 'fire_rate_up',
-    name: 'Rapid Fire',
-    description: '-15% fire cooldown',
-    maxLevel: 5,
-    currentLevel: 0,
-    apply: (_p, w) => { w.weapons[0].fireRate = Math.floor(w.weapons[0].fireRate * 0.85); },
-  },
-  {
-    id: 'bullet_count',
-    name: 'Multi Shot',
-    description: '+1 bullet per shot',
-    maxLevel: 4,
-    currentLevel: 0,
-    apply: (_p, w) => { w.weapons[0].bulletCount += 1; },
-  },
-  {
-    id: 'pierce',
-    name: 'Piercing Rounds',
-    description: '+1 enemy pierced per bullet',
-    maxLevel: 3,
-    currentLevel: 0,
-    apply: (_p, w) => { w.weapons[0].pierce += 1; },
-  },
-  {
-    id: 'speed_up',
-    name: 'Swift Feet',
-    description: '+12% movement speed',
-    maxLevel: 5,
-    currentLevel: 0,
-    apply: (p) => { p.speed = Math.floor(p.speed * 1.12); },
-  },
-  {
-    id: 'max_hp',
-    name: 'Vitality',
-    description: '+25 max HP and heal',
-    maxLevel: 5,
-    currentLevel: 0,
-    apply: (p) => { p.maxHp += 25; p.hp = Math.min(p.hp + 25, p.maxHp); },
-  },
-  {
-    id: 'bullet_speed',
-    name: 'Velocity Rounds',
-    description: '+20% bullet speed',
-    maxLevel: 3,
-    currentLevel: 0,
-    apply: (_p, w) => { w.weapons[0].bulletSpeed = Math.floor(w.weapons[0].bulletSpeed * 1.2); },
-  },
-];
+    apply: buildApplyFn(row.type, row.stat, Number(row.factor)),
+  }));
+}
+
+let upgradePool: UpgradeDef[] = loadUpgradePool();
 
 export class UpgradeSystem {
   static getRandomUpgrades(count: number, _player: Player, _weapons: WeaponSystem): UpgradeDef[] {
@@ -87,8 +70,10 @@ export class UpgradeSystem {
   }
 
   static reset(): void {
-    upgradePool.forEach((u) => (u.currentLevel = 0));
+    upgradePool = loadUpgradePool();
+  }
+
+  static getPool(): UpgradeDef[] {
+    return upgradePool;
   }
 }
-
-import Phaser from 'phaser';

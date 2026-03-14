@@ -1,0 +1,6 @@
+key,value,desc
+ENEMY_BASE_SPEED,80,Base enemy movement speed (px/s)
+ENEMY_BASE_HP,30,Base enemy hit points
+ENEMY_BASE_DAMAGE,10,Base enemy contact damage
+ENEMY_BASE_XP,10,Base XP reward on kill
+ENEMY_SIZE,16,Enemy collision circle radius (px)

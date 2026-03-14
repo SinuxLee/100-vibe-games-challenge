@@ -11,6 +11,18 @@ export class LevelUpScene extends Phaser.Scene {
 
   create(): void {
     const { width, height } = this.scale;
+    const gameScene = this.scene.get('GameScene') as GameScene;
+    const upgrades = UpgradeSystem.getRandomUpgrades(UPGRADE_CHOICES, gameScene.player, gameScene.weaponSystem);
+
+    if (gameScene.autoBattle?.enabled && upgrades.length > 0) {
+      const pickIndex = gameScene.autoBattle.autoSelectUpgrade();
+      const chosen = upgrades[Math.min(pickIndex, upgrades.length - 1)];
+      UpgradeSystem.apply(chosen, gameScene.player, gameScene.weaponSystem);
+      SoundManager.playClick();
+      this.scene.stop();
+      gameScene.resumeFromLevelUp();
+      return;
+    }
 
     const overlay = this.add.graphics();
     overlay.fillStyle(0x000000, 0.65);
@@ -22,9 +34,6 @@ export class LevelUpScene extends Phaser.Scene {
       color: '#ffd700',
       fontStyle: 'bold',
     }).setOrigin(0.5);
-
-    const gameScene = this.scene.get('GameScene') as GameScene;
-    const upgrades = UpgradeSystem.getRandomUpgrades(UPGRADE_CHOICES, gameScene.player, gameScene.weaponSystem);
 
     const cardWidth = width * 0.8;
     const cardHeight = 120;

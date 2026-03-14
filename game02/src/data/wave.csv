@@ -1,0 +1,8 @@
+key,value,desc
+WAVE_DURATION,30000,Time per wave (ms)
+SPAWN_INTERVAL_BASE,1500,Starting spawn cooldown (ms)
+SPAWN_INTERVAL_MIN,300,Minimum spawn cooldown (ms)
+SPAWN_COUNT_BASE,1,Base enemies per spawn tick
+ENEMY_HP_SCALING,0.15,Enemy HP increase per wave (+15%)
+ENEMY_SPEED_SCALING,0.05,Enemy speed increase per wave (+5%)
+SPAWN_INTERVAL_REDUCTION,50,Spawn cooldown decrease per wave (ms)

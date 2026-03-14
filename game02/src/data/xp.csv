@@ -1,0 +1,5 @@
+key,value,desc
+XP_ORB_SIZE,8,XP orb collision radius (px)
+XP_BASE_TO_LEVEL,30,XP needed for level 2
+XP_LEVEL_SCALING,1.35,XP exponential scaling factor per level
+XP_ATTRACT_SPEED,300,Orb magnetic attraction speed (px/s)

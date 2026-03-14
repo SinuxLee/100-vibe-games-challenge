@@ -13,6 +13,7 @@ import { WaveSystem } from '../systems/WaveSystem';
 import { SaveSystem } from '../systems/SaveSystem';
 import { UpgradeSystem } from '../systems/UpgradeSystem';
 import { SoundManager } from '../systems/SoundManager';
+import { AutoBattleSystem } from '../systems/AutoBattleSystem';
 import { distanceBetween } from '../utils/helpers';
 
 export class GameScene extends Phaser.Scene {
@@ -23,6 +24,7 @@ export class GameScene extends Phaser.Scene {
 
   weaponSystem!: WeaponSystem;
   waveSystem!: WaveSystem;
+  autoBattle!: AutoBattleSystem;
 
   kills: number = 0;
   elapsedTime: number = 0;
@@ -59,6 +61,7 @@ export class GameScene extends Phaser.Scene {
 
     this.weaponSystem = new WeaponSystem(this);
     this.waveSystem = new WaveSystem(this);
+    this.autoBattle = new AutoBattleSystem(this);
 
     this.physics.add.overlap(this.bullets, this.enemies, this.onBulletHitEnemy as any, undefined, this);
     this.physics.add.overlap(this.player, this.enemies, this.onPlayerHitEnemy as any, undefined, this);
@@ -90,6 +93,7 @@ export class GameScene extends Phaser.Scene {
 
     this.elapsedTime += delta;
     this.player.update();
+    this.autoBattle.update();
     this.weaponSystem.update(time);
     this.waveSystem.update(time, delta);
     this.attractXPOrbs();

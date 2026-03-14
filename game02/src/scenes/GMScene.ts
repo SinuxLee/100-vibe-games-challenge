@@ -173,6 +173,7 @@ export class GMScene extends Phaser.Scene {
     const actions = [
       { label: 'GOD', active: () => this.godMode, toggle: () => this.toggleGodMode(gameScene) },
       { label: '1-HIT', active: () => this.oneShot, toggle: () => this.toggleOneShot(gameScene) },
+      { label: 'AUTO', active: () => gameScene.autoBattle.enabled, toggle: () => { gameScene.autoBattle.enabled = !gameScene.autoBattle.enabled; } },
       { label: '+10LV', active: () => false as boolean, toggle: () => this.addLevels(gameScene, 10) },
       { label: 'HEAL', active: () => false as boolean, toggle: () => this.healFull(gameScene) },
       { label: 'NUKE', active: () => false as boolean, toggle: () => this.killAllEnemies(gameScene) },

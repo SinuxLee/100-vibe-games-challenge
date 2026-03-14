@@ -1,0 +1,5 @@
+key,value,desc
+WEAPON_BASE_DAMAGE,15,Starting weapon damage
+WEAPON_BASE_FIRE_RATE,600,Starting fire cooldown (ms)
+WEAPON_BULLET_SPEED,450,Starting bullet speed (px/s)
+BULLET_SIZE,6,Bullet collision circle radius (px)
