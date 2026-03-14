@@ -49,6 +49,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const size = cfg?.size ?? PLAYER_SIZE;
     this.setCollideWorldBounds(true);
     this.setCircle(size, 0, 0);
+    this.setDisplaySize(size * 2, size * 2);
 
     if (scene.input.keyboard) {
       this.keys = {

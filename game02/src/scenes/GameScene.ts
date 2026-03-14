@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import {
-  WORLD_WIDTH, WORLD_HEIGHT, COLORS,
+  WORLD_WIDTH, WORLD_HEIGHT,
   XP_ATTRACT_SPEED, getPlayerById, DEFAULT_PLAYER_ID,
 } from '../config';
 import { EnemyConfig, BossConfig } from '../utils/csvLoader';
@@ -15,6 +15,7 @@ import { SaveSystem } from '../systems/SaveSystem';
 import { UpgradeSystem } from '../systems/UpgradeSystem';
 import { SoundManager } from '../systems/SoundManager';
 import { AutoBattleSystem } from '../systems/AutoBattleSystem';
+import { TutorialScene } from './TutorialScene';
 import { distanceBetween } from '../utils/helpers';
 
 export class GameScene extends Phaser.Scene {
@@ -49,7 +50,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(data?: { loadSave?: boolean; characterId?: string }): void {
-    SoundManager.init();
+    SoundManager.init(this);
     SoundManager.resume();
 
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
@@ -90,6 +91,12 @@ export class GameScene extends Phaser.Scene {
     this.registry.set('kills', this.kills);
     this.registry.set('time', this.elapsedTime);
     this.registry.set('wave', this.waveSystem.currentWave);
+
+    if (!data?.loadSave && TutorialScene.shouldShow()) {
+      this.isPaused = true;
+      this.physics.pause();
+      this.scene.launch('TutorialScene');
+    }
   }
 
   update(time: number, delta: number): void {
@@ -105,18 +112,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawBackground(): void {
-    const g = this.add.graphics();
-    g.fillStyle(COLORS.background);
-    g.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-
-    g.lineStyle(1, 0x2a2a4e, 0.3);
-    const gridSize = 80;
-    for (let x = 0; x <= WORLD_WIDTH; x += gridSize) {
-      g.lineBetween(x, 0, x, WORLD_HEIGHT);
-    }
-    for (let y = 0; y <= WORLD_HEIGHT; y += gridSize) {
-      g.lineBetween(0, y, WORLD_WIDTH, y);
-    }
+    this.add.tileSprite(
+      WORLD_WIDTH / 2, WORLD_HEIGHT / 2,
+      WORLD_WIDTH, WORLD_HEIGHT,
+      'tile_floor',
+    );
   }
 
   private setupJoystick(): void {
@@ -266,18 +266,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.pause();
     SoundManager.playLevelUp();
 
-    const flash = this.add.rectangle(
-      this.cameras.main.scrollX + this.scale.width / 2,
-      this.cameras.main.scrollY + this.scale.height / 2,
-      this.scale.width, this.scale.height,
-      0xffd700, 0.3,
-    );
-    this.tweens.add({
-      targets: flash,
-      alpha: 0,
-      duration: 400,
-      onComplete: () => flash.destroy(),
-    });
+    this.cameras.main.flash(300, 255, 215, 0);
 
     this.scene.launch('LevelUpScene');
   }

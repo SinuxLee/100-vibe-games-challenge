@@ -8,6 +8,7 @@ import { HUDScene } from './scenes/HUDScene';
 import { LevelUpScene } from './scenes/LevelUpScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { GMScene } from './scenes/GMScene';
+import { TutorialScene } from './scenes/TutorialScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -21,7 +22,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  scene: [BootScene, PreloadScene, MenuScene, GameScene, HUDScene, LevelUpScene, GameOverScene, GMScene],
+  scene: [BootScene, PreloadScene, MenuScene, GameScene, HUDScene, LevelUpScene, GameOverScene, GMScene, TutorialScene],
   backgroundColor: COLORS.background,
   scale: {
     mode: Phaser.Scale.FIT,

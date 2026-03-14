@@ -1,4 +1,4 @@
 id,name,speed,hp,damage,xpReward,size,texture,color,desc
-basic,Basic Zombie,80,30,10,10,16,enemy,0xe53935,Standard chaser
-fast,Speed Demon,140,15,8,12,12,enemy,0xff9800,Fast but fragile
-tank,Tank,50,80,20,25,24,enemy,0x795548,Slow and tough
+basic,Basic Zombie,80,30,10,10,16,enemy_basic,0xe53935,Standard chaser
+fast,Speed Demon,140,15,8,12,12,enemy_fast,0xff9800,Fast but fragile
+tank,Tank,50,80,20,25,24,enemy_tank,0x795548,Slow and tough

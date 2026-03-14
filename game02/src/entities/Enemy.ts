@@ -39,6 +39,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     const size = cfg?.size ?? ENEMY_SIZE;
     this.setCircle(size, 0, 0);
+    this.setDisplaySize(size * 2, size * 2);
   }
 
   update(): void {

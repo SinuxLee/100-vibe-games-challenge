@@ -66,7 +66,7 @@ export class BossEnemy extends Enemy {
     this.hpBarBg.destroy();
     this.hpBarFill.destroy();
 
-    SoundManager.playBossSpawn();
+    SoundManager.playBossDeath();
     this.gameScene.cameras.main.shake(400, 0.012);
 
     for (let i = 0; i < 8; i++) {

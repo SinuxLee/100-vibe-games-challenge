@@ -1,2 +1,2 @@
 id,name,speed,hp,damage,xpReward,size,texture,color,waveInterval,desc
-brute,Brute,48,600,30,200,48,boss,0x8e24aa,5,Standard boss every 5 waves
+brute,Brute,48,600,30,200,48,boss_brute,0x8e24aa,5,Standard boss every 5 waves

@@ -26,7 +26,7 @@ export class MenuScene extends Phaser.Scene {
 
     const startBtn = this.createButton(width / 2, height * 0.52, 'NEW GAME');
     startBtn.on('pointerdown', () => {
-      SoundManager.init();
+      SoundManager.init(this);
       SoundManager.resume();
       SoundManager.playClick();
       SaveSystem.deleteSave();
@@ -36,7 +36,7 @@ export class MenuScene extends Phaser.Scene {
     if (SaveSystem.hasSave()) {
       const continueBtn = this.createButton(width / 2, height * 0.62, 'CONTINUE');
       continueBtn.on('pointerdown', () => {
-        SoundManager.init();
+        SoundManager.init(this);
         SoundManager.resume();
         SoundManager.playClick();
         this.scene.start('GameScene', { loadSave: true });

@@ -262,29 +262,5 @@ interface SaveData {
 
 ### Web Audio 音效合成模式
 
-```typescript
-// 标准模式: Oscillator → Gain → masterGain → destination
-static playXxx(): void {
-  const t = this.ctx.currentTime;
-  
-  const osc = this.ctx.createOscillator();
-  osc.type = 'sine' | 'square' | 'sawtooth' | 'triangle';
-  osc.frequency.setValueAtTime(startFreq, t);
-  osc.frequency.exponentialRampToValueAtTime(endFreq, t + duration);
-  
-  const gain = this.ctx.createGain();
-  gain.gain.setValueAtTime(volume, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
-  
-  osc.connect(gain);
-  gain.connect(this.masterGain);
-  osc.start(t);
-  osc.stop(t + duration);
-}
-```
-
-> **关键知识**:
-> - `exponentialRampToValueAtTime` 的目标值必须 > 0（用 0.001 代替 0）
-> - `OscillatorNode` 只能 start/stop 一次，是一次性对象
-> - 不需要手动断开连接，stop 后 GC 会自动回收
-> - 白噪声通过 `AudioBufferSourceNode` + 随机采样数据实现
+> 详见 `rules-generic.md` #11 (Procedural Assets)。标准模式: Oscillator → Gain → masterGain → destination。
+> `exponentialRampToValueAtTime` 目标值必须 > 0。OscillatorNode 是一次性对象。

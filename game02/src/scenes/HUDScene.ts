@@ -13,6 +13,7 @@ export class HUDScene extends Phaser.Scene {
   private levelText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
   private muteBtn!: Phaser.GameObjects.Text;
+  private fpsText!: Phaser.GameObjects.Text;
   private pauseOverlay?: Phaser.GameObjects.Container;
 
   constructor() {
@@ -75,11 +76,23 @@ export class HUDScene extends Phaser.Scene {
     gmBtn.on('pointerover', () => gmBtn.setBackgroundColor('#30363d'));
     gmBtn.on('pointerout', () => gmBtn.setBackgroundColor('#21262d'));
 
+    this.fpsText = this.add.text(GAME_WIDTH / 2, topY + 96, '', {
+      fontSize: '14px',
+      fontFamily: 'monospace',
+      color: '#66bb6a',
+    }).setOrigin(0.5, 0).setAlpha(0.7);
+
     if (this.input.keyboard) {
       this.input.keyboard.on('keydown-ESC', () => this.togglePause());
       const backtick = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
       backtick.on('down', () => this.toggleGM());
     }
+  }
+
+  update(): void {
+    const fps = Math.round(this.game.loop.actualFps);
+    const drawCalls = (this.game.renderer as any).drawCount ?? '-';
+    this.fpsText.setText(`FPS:${fps}  DC:${drawCalls}`);
   }
 
   private togglePause(): void {
