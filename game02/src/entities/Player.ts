@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import {
   PLAYER_SPEED, PLAYER_MAX_HP, PLAYER_INVINCIBLE_MS, PLAYER_SIZE,
-  XP_BASE_TO_LEVEL, XP_LEVEL_SCALING,
+  PLAYER_PICKUP_RANGE, XP_BASE_TO_LEVEL, XP_LEVEL_SCALING,
 } from '../config';
+import { PlayerConfig } from '../utils/csvLoader';
 import { GameScene } from '../scenes/GameScene';
 import { SoundManager } from '../systems/SoundManager';
 
@@ -13,6 +14,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   level: number;
   xp: number;
   xpToNext: number;
+  xpBase: number;
+  xpScaling: number;
+  pickupRange: number;
+  characterId: string;
+  private invincibleMs: number;
   private invincibleUntil: number = 0;
   private keys!: {
     W: Phaser.Input.Keyboard.Key;
@@ -22,21 +28,27 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   };
   private gameScene: GameScene;
 
-  constructor(scene: GameScene, x: number, y: number) {
-    super(scene, x, y, 'player');
+  constructor(scene: GameScene, x: number, y: number, cfg?: PlayerConfig) {
+    super(scene, x, y, cfg?.texture ?? 'player');
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.gameScene = scene;
 
-    this.hp = PLAYER_MAX_HP;
-    this.maxHp = PLAYER_MAX_HP;
-    this.speed = PLAYER_SPEED;
+    this.characterId = cfg?.id ?? 'warrior';
+    this.hp = cfg?.maxHp ?? PLAYER_MAX_HP;
+    this.maxHp = cfg?.maxHp ?? PLAYER_MAX_HP;
+    this.speed = cfg?.speed ?? PLAYER_SPEED;
+    this.xpBase = cfg?.xpBase ?? XP_BASE_TO_LEVEL;
+    this.xpScaling = cfg?.xpScaling ?? XP_LEVEL_SCALING;
+    this.invincibleMs = cfg?.invincibleMs ?? PLAYER_INVINCIBLE_MS;
+    this.pickupRange = cfg?.pickupRange ?? PLAYER_PICKUP_RANGE;
     this.level = 1;
     this.xp = 0;
-    this.xpToNext = XP_BASE_TO_LEVEL;
+    this.xpToNext = this.xpBase;
 
+    const size = cfg?.size ?? PLAYER_SIZE;
     this.setCollideWorldBounds(true);
-    this.setCircle(PLAYER_SIZE, 0, 0);
+    this.setCircle(size, 0, 0);
 
     if (scene.input.keyboard) {
       this.keys = {
@@ -78,7 +90,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (now < this.invincibleUntil) return;
 
     this.hp = Math.max(0, this.hp - amount);
-    this.invincibleUntil = now + PLAYER_INVINCIBLE_MS;
+    this.invincibleUntil = now + this.invincibleMs;
 
     SoundManager.playPlayerHit();
     this.scene.cameras.main.shake(80, 0.004);
@@ -108,13 +120,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.xp >= this.xpToNext) {
       this.xp -= this.xpToNext;
       this.level++;
-      this.xpToNext = Math.floor(XP_BASE_TO_LEVEL * Math.pow(XP_LEVEL_SCALING, this.level - 1));
+      this.xpToNext = Math.floor(this.xpBase * Math.pow(this.xpScaling, this.level - 1));
       return true;
     }
     return false;
   }
 
   recalcXPToNext(): void {
-    this.xpToNext = Math.floor(XP_BASE_TO_LEVEL * Math.pow(XP_LEVEL_SCALING, this.level - 1));
+    this.xpToNext = Math.floor(this.xpBase * Math.pow(this.xpScaling, this.level - 1));
   }
 }

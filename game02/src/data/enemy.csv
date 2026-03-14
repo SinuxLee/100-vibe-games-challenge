@@ -1,6 +1,4 @@
-key,value,desc
-ENEMY_BASE_SPEED,80,Base enemy movement speed (px/s)
-ENEMY_BASE_HP,30,Base enemy hit points
-ENEMY_BASE_DAMAGE,10,Base enemy contact damage
-ENEMY_BASE_XP,10,Base XP reward on kill
-ENEMY_SIZE,16,Enemy collision circle radius (px)
+id,name,speed,hp,damage,xpReward,size,texture,color,desc
+basic,Basic Zombie,80,30,10,10,16,enemy,0xe53935,Standard chaser
+fast,Speed Demon,140,15,8,12,12,enemy,0xff9800,Fast but fragile
+tank,Tank,50,80,20,25,24,enemy,0x795548,Slow and tough

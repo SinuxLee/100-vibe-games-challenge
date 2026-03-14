@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import {
   ENEMY_BASE_HP, ENEMY_BASE_SPEED, ENEMY_BASE_DAMAGE, ENEMY_BASE_XP, ENEMY_SIZE,
 } from '../config';
+import { EnemyConfig } from '../utils/csvLoader';
 import { GameScene } from '../scenes/GameScene';
 import { SoundManager } from '../systems/SoundManager';
 
@@ -11,21 +12,33 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   speed: number;
   damage: number;
   xpReward: number;
+  enemyId: string;
   protected gameScene: GameScene;
 
-  constructor(scene: GameScene, x: number, y: number, hpMul: number = 1, speedMul: number = 1) {
-    super(scene, x, y, 'enemy');
+  constructor(
+    scene: GameScene,
+    x: number,
+    y: number,
+    hpMul: number = 1,
+    speedMul: number = 1,
+    cfg?: EnemyConfig,
+  ) {
+    super(scene, x, y, cfg?.texture ?? 'enemy');
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.gameScene = scene;
 
-    this.maxHp = Math.floor(ENEMY_BASE_HP * hpMul);
+    this.enemyId = cfg?.id ?? 'basic';
+    const baseHp = cfg?.hp ?? ENEMY_BASE_HP;
+    const baseSpeed = cfg?.speed ?? ENEMY_BASE_SPEED;
+    this.maxHp = Math.floor(baseHp * hpMul);
     this.hp = this.maxHp;
-    this.speed = ENEMY_BASE_SPEED * speedMul;
-    this.damage = ENEMY_BASE_DAMAGE;
-    this.xpReward = ENEMY_BASE_XP;
+    this.speed = baseSpeed * speedMul;
+    this.damage = cfg?.damage ?? ENEMY_BASE_DAMAGE;
+    this.xpReward = cfg?.xpReward ?? ENEMY_BASE_XP;
 
-    this.setCircle(ENEMY_SIZE, 0, 0);
+    const size = cfg?.size ?? ENEMY_SIZE;
+    this.setCircle(size, 0, 0);
   }
 
   update(): void {
@@ -44,7 +57,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   die(): void {
     SoundManager.playEnemyDeath();
 
-    const deathSprite = this.scene.add.circle(this.x, this.y, ENEMY_SIZE, 0xffffff, 0.8);
+    const size = (this.body as Phaser.Physics.Arcade.Body)?.radius ?? ENEMY_SIZE;
+    const deathSprite = this.scene.add.circle(this.x, this.y, size, 0xffffff, 0.8);
     this.scene.tweens.add({
       targets: deathSprite,
       scaleX: 2.5,

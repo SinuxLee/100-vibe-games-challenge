@@ -1,5 +1,4 @@
-key,value,desc
-WEAPON_BASE_DAMAGE,15,Starting weapon damage
-WEAPON_BASE_FIRE_RATE,600,Starting fire cooldown (ms)
-WEAPON_BULLET_SPEED,450,Starting bullet speed (px/s)
-BULLET_SIZE,6,Bullet collision circle radius (px)
+id,name,damage,fireRate,bulletSpeed,bulletCount,pierce,bulletSize,bulletTexture,desc
+basic_gun,Basic Gun,15,600,450,1,1,6,bullet,Standard auto-aim gun
+shotgun,Shotgun,10,1000,350,5,1,5,bullet,Wide spread burst
+sniper,Sniper,50,1500,800,1,3,4,bullet,Long range piercing

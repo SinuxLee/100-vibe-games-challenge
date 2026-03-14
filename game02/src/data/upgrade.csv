@@ -1,8 +1,8 @@
-id,name,description,maxLevel,type,stat,factor
-pierce,Piercing Rounds,+1 enemy pierced per bullet,3,weapon,pierce,1
-bullet_speed,Velocity Rounds,+20% bullet speed,3,weapon,bulletSpeed,1.2
-bullet_count,Multi Shot,+1 bullet per shot,4,weapon,bulletCount,1
-damage_up,Power Shot,+25% bullet damage,5,weapon,damage,1.25
-fire_rate_up,Rapid Fire,-15% fire cooldown,5,weapon,fireRate,0.85
-speed_up,Swift Feet,+12% movement speed,5,player,speed,1.12
-max_hp,Vitality,+25 max HP and heal,5,player,maxHp,25
+id,name,description,maxLevel,type,stat,factor,forCharacter
+pierce,Piercing Rounds,+1 enemy pierced per bullet,3,weapon,pierce,1,all
+bullet_speed,Velocity Rounds,+20% bullet speed,3,weapon,bulletSpeed,1.2,all
+bullet_count,Multi Shot,+1 bullet per shot,4,weapon,bulletCount,1,all
+damage_up,Power Shot,+25% bullet damage,5,weapon,damage,1.25,all
+fire_rate_up,Rapid Fire,-15% fire cooldown,5,weapon,fireRate,0.85,all
+speed_up,Swift Feet,+12% movement speed,5,player,speed,1.12,all
+max_hp,Vitality,+25 max HP and heal,5,player,maxHp,25,all

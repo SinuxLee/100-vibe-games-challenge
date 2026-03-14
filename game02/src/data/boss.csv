@@ -1,7 +1,2 @@
-key,value,desc
-BOSS_HP_MULTIPLIER,20,Boss HP = enemy HP * this
-BOSS_DAMAGE_MULTIPLIER,3,Boss damage = enemy damage * this
-BOSS_SPEED_MULTIPLIER,0.6,Boss speed = enemy speed * this
-BOSS_SIZE,48,Boss collision circle radius (px)
-BOSS_XP_MULTIPLIER,20,Boss XP = enemy XP * this
-BOSS_WAVE_INTERVAL,5,Boss spawns every N waves
+id,name,speed,hp,damage,xpReward,size,texture,color,waveInterval,desc
+brute,Brute,48,600,30,200,48,boss,0x8e24aa,5,Standard boss every 5 waves

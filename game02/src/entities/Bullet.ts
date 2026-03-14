@@ -5,11 +5,11 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
   damage: number = 0;
   pierce: number = 1;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, 'bullet');
+  constructor(scene: Phaser.Scene, x: number, y: number, bulletSize?: number, bulletTexture?: string) {
+    super(scene, x, y, bulletTexture ?? 'bullet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setCircle(BULLET_SIZE, 0, 0);
+    this.setCircle(bulletSize ?? BULLET_SIZE, 0, 0);
   }
 
   fire(targetX: number, targetY: number, damage: number, pierce: number, speed: number = WEAPON_BULLET_SPEED): void {

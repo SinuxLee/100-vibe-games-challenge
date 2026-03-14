@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import {
-  WORLD_WIDTH, WORLD_HEIGHT, COLORS, PLAYER_PICKUP_RANGE,
-  XP_ATTRACT_SPEED, PLAYER_INVINCIBLE_MS,
+  WORLD_WIDTH, WORLD_HEIGHT, COLORS,
+  XP_ATTRACT_SPEED, getPlayerById, DEFAULT_PLAYER_ID,
 } from '../config';
+import { EnemyConfig, BossConfig } from '../utils/csvLoader';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/Enemy';
 import { BossEnemy } from '../entities/BossEnemy';
@@ -47,19 +48,22 @@ export class GameScene extends Phaser.Scene {
     this.joystickPointer = null;
   }
 
-  create(data?: { loadSave?: boolean }): void {
+  create(data?: { loadSave?: boolean; characterId?: string }): void {
     SoundManager.init();
     SoundManager.resume();
 
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
     this.drawBackground();
 
-    this.player = new Player(this, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+    const charId = data?.characterId ?? DEFAULT_PLAYER_ID;
+    const playerCfg = getPlayerById(charId);
+    this.player = new Player(this, WORLD_WIDTH / 2, WORLD_HEIGHT / 2, playerCfg);
     this.enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
     this.bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     this.xpOrbs = this.physics.add.group({ classType: XPOrb, runChildUpdate: false });
 
-    this.weaponSystem = new WeaponSystem(this);
+    const startWeapon = playerCfg?.startWeapon;
+    this.weaponSystem = new WeaponSystem(this, startWeapon);
     this.waveSystem = new WaveSystem(this);
     this.autoBattle = new AutoBattleSystem(this);
 
@@ -170,7 +174,7 @@ export class GameScene extends Phaser.Scene {
       const orb = obj as XPOrb;
       if (!orb.active) return;
       const dist = distanceBetween(this.player.x, this.player.y, orb.x, orb.y);
-      if (dist < PLAYER_PICKUP_RANGE) {
+      if (dist < this.player.pickupRange) {
         this.physics.moveToObject(orb, this.player, XP_ATTRACT_SPEED);
       }
     });
@@ -247,13 +251,13 @@ export class GameScene extends Phaser.Scene {
     this.xpOrbs.add(orb);
   }
 
-  spawnEnemy(x: number, y: number, hpMul: number, speedMul: number): void {
-    const enemy = new Enemy(this, x, y, hpMul, speedMul);
+  spawnEnemy(x: number, y: number, hpMul: number, speedMul: number, cfg?: EnemyConfig): void {
+    const enemy = new Enemy(this, x, y, hpMul, speedMul, cfg);
     this.enemies.add(enemy);
   }
 
-  spawnBoss(x: number, y: number, wave: number): void {
-    const boss = new BossEnemy(this, x, y, wave);
+  spawnBoss(x: number, y: number, wave: number, bossCfg?: BossConfig): void {
+    const boss = new BossEnemy(this, x, y, wave, bossCfg);
     this.enemies.add(boss);
   }
 

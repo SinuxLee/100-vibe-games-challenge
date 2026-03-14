@@ -4,12 +4,12 @@ import { XP_ORB_SIZE } from '../config';
 export class XPOrb extends Phaser.Physics.Arcade.Sprite {
   xpValue: number;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, value: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, value: number, orbSize?: number) {
     super(scene, x, y, 'xp_orb');
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.xpValue = value;
-    this.setCircle(XP_ORB_SIZE, 0, 0);
+    this.setCircle(orbSize ?? XP_ORB_SIZE, 0, 0);
 
     scene.tweens.add({
       targets: this,

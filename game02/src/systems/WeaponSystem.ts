@@ -1,4 +1,5 @@
-import { WEAPON_BASE_DAMAGE, WEAPON_BASE_FIRE_RATE, WEAPON_BULLET_SPEED } from '../config';
+import { WEAPON_BASE_DAMAGE, WEAPON_BASE_FIRE_RATE, WEAPON_BULLET_SPEED, getWeaponById } from '../config';
+import { WeaponConfig } from '../utils/csvLoader';
 import { GameScene } from '../scenes/GameScene';
 import { Bullet } from '../entities/Bullet';
 import { Enemy } from '../entities/Enemy';
@@ -12,6 +13,8 @@ export interface WeaponDef {
   bulletSpeed: number;
   bulletCount: number;
   pierce: number;
+  bulletSize: number;
+  bulletTexture: string;
   level: number;
 }
 
@@ -19,20 +22,26 @@ export class WeaponSystem {
   private scene: GameScene;
   private lastFired: number = 0;
 
-  weapons: WeaponDef[] = [
-    {
-      name: 'Basic Gun',
-      damage: WEAPON_BASE_DAMAGE,
-      fireRate: WEAPON_BASE_FIRE_RATE,
-      bulletSpeed: WEAPON_BULLET_SPEED,
-      bulletCount: 1,
-      pierce: 1,
-      level: 1,
-    },
-  ];
+  weapons: WeaponDef[] = [];
 
-  constructor(scene: GameScene) {
+  constructor(scene: GameScene, weaponId?: string) {
     this.scene = scene;
+    const cfg = weaponId ? getWeaponById(weaponId) : undefined;
+    this.weapons = [this.buildWeaponDef(cfg)];
+  }
+
+  private buildWeaponDef(cfg?: WeaponConfig): WeaponDef {
+    return {
+      name: cfg?.name ?? 'Basic Gun',
+      damage: cfg?.damage ?? WEAPON_BASE_DAMAGE,
+      fireRate: cfg?.fireRate ?? WEAPON_BASE_FIRE_RATE,
+      bulletSpeed: cfg?.bulletSpeed ?? WEAPON_BULLET_SPEED,
+      bulletCount: cfg?.bulletCount ?? 1,
+      pierce: cfg?.pierce ?? 1,
+      bulletSize: cfg?.bulletSize ?? 6,
+      bulletTexture: cfg?.bulletTexture ?? 'bullet',
+      level: 1,
+    };
   }
 
   update(time: number): void {
@@ -61,7 +70,7 @@ export class WeaponSystem {
       const tx = player.x + Math.cos(angle) * 300;
       const ty = player.y + Math.sin(angle) * 300;
 
-      const bullet = new Bullet(this.scene, player.x, player.y);
+      const bullet = new Bullet(this.scene, player.x, player.y, weapon.bulletSize, weapon.bulletTexture);
       this.scene.bullets.add(bullet);
       bullet.fire(tx, ty, weapon.damage, weapon.pierce, weapon.bulletSpeed);
     }

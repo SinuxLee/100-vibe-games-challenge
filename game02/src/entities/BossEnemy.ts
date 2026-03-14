@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import {
-  ENEMY_BASE_HP, BOSS_HP_MULTIPLIER, BOSS_DAMAGE_MULTIPLIER,
-  BOSS_SPEED_MULTIPLIER, ENEMY_BASE_SPEED, ENEMY_BASE_DAMAGE,
-  BOSS_XP_MULTIPLIER, ENEMY_BASE_XP, BOSS_SIZE, ENEMY_HP_SCALING, ENEMY_SIZE,
+  ENEMY_BASE_HP, ENEMY_BASE_SPEED, ENEMY_BASE_DAMAGE,
+  ENEMY_BASE_XP, ENEMY_HP_SCALING,
 } from '../config';
+import { BossConfig, EnemyConfig } from '../utils/csvLoader';
 import { Enemy } from './Enemy';
 import { GameScene } from '../scenes/GameScene';
 import { SoundManager } from '../systems/SoundManager';
@@ -11,20 +11,31 @@ import { SoundManager } from '../systems/SoundManager';
 export class BossEnemy extends Enemy {
   private hpBarBg!: Phaser.GameObjects.Graphics;
   private hpBarFill!: Phaser.GameObjects.Graphics;
+  private bossSize: number;
 
-  constructor(scene: GameScene, x: number, y: number, wave: number) {
-    super(scene, x, y, 1, 1);
+  constructor(scene: GameScene, x: number, y: number, wave: number, bossCfg?: BossConfig) {
+    const dummyEnemyCfg: EnemyConfig = {
+      id: bossCfg?.id ?? 'brute',
+      name: bossCfg?.name ?? 'Boss',
+      speed: bossCfg?.speed ?? ENEMY_BASE_SPEED * 0.6,
+      hp: bossCfg?.hp ?? ENEMY_BASE_HP * 20,
+      damage: bossCfg?.damage ?? ENEMY_BASE_DAMAGE * 3,
+      xpReward: bossCfg?.xpReward ?? ENEMY_BASE_XP * 20,
+      size: bossCfg?.size ?? 48,
+      texture: bossCfg?.texture ?? 'boss',
+      color: bossCfg?.color ?? 0x8e24aa,
+      desc: bossCfg?.desc ?? '',
+    };
 
-    this.setTexture('boss');
     const waveMul = 1 + wave * ENEMY_HP_SCALING;
-    this.maxHp = Math.floor(ENEMY_BASE_HP * BOSS_HP_MULTIPLIER * waveMul);
-    this.hp = this.maxHp;
-    this.speed = ENEMY_BASE_SPEED * BOSS_SPEED_MULTIPLIER;
-    this.damage = Math.floor(ENEMY_BASE_DAMAGE * BOSS_DAMAGE_MULTIPLIER);
-    this.xpReward = ENEMY_BASE_XP * BOSS_XP_MULTIPLIER;
+    const scaledHp = Math.floor(dummyEnemyCfg.hp * waveMul);
 
-    this.setCircle(BOSS_SIZE, 0, 0);
-    this.setDisplaySize(BOSS_SIZE * 2, BOSS_SIZE * 2);
+    super(scene, x, y, 1, 1, { ...dummyEnemyCfg, hp: scaledHp });
+
+    this.setTexture(dummyEnemyCfg.texture);
+    this.bossSize = dummyEnemyCfg.size;
+    this.setCircle(this.bossSize, 0, 0);
+    this.setDisplaySize(this.bossSize * 2, this.bossSize * 2);
 
     this.hpBarBg = scene.add.graphics();
     this.hpBarFill = scene.add.graphics();
@@ -39,7 +50,7 @@ export class BossEnemy extends Enemy {
     const barW = 60;
     const barH = 6;
     const x = this.x - barW / 2;
-    const y = this.y - BOSS_SIZE - 12;
+    const y = this.y - this.bossSize - 12;
 
     this.hpBarBg.clear();
     this.hpBarBg.fillStyle(0x424242, 0.8);
@@ -76,7 +87,7 @@ export class BossEnemy extends Enemy {
       });
     }
 
-    const flash = this.scene.add.circle(this.x, this.y, BOSS_SIZE, 0xffffff, 0.9);
+    const flash = this.scene.add.circle(this.x, this.y, this.bossSize, 0xffffff, 0.9);
     this.scene.tweens.add({
       targets: flash,
       scaleX: 4,

@@ -1,60 +1,85 @@
-import { parseConfigCsv } from './utils/csvLoader';
+import {
+  parseTableCsv, lookupById,
+  PlayerConfig, EnemyConfig, BossConfig, WeaponConfig,
+  UpgradeConfig, WaveConfig, XPConfig,
+} from './utils/csvLoader';
 
 import playerCsv from './data/player.csv?raw';
 import enemyCsv from './data/enemy.csv?raw';
 import bossCsv from './data/boss.csv?raw';
 import weaponCsv from './data/weapon.csv?raw';
-import xpCsv from './data/xp.csv?raw';
+import upgradeCsv from './data/upgrade.csv?raw';
 import waveCsv from './data/wave.csv?raw';
+import xpCsv from './data/xp.csv?raw';
 
-const p = parseConfigCsv(playerCsv);
-const e = parseConfigCsv(enemyCsv);
-const b = parseConfigCsv(bossCsv);
-const w = parseConfigCsv(weaponCsv);
-const x = parseConfigCsv(xpCsv);
-const wv = parseConfigCsv(waveCsv);
+export const PLAYER_TABLE = parseTableCsv<PlayerConfig>(playerCsv, 'player');
+export const ENEMY_TABLE = parseTableCsv<EnemyConfig>(enemyCsv, 'enemy');
+export const BOSS_TABLE = parseTableCsv<BossConfig>(bossCsv, 'boss');
+export const WEAPON_TABLE = parseTableCsv<WeaponConfig>(weaponCsv, 'weapon');
+export const UPGRADE_TABLE = parseTableCsv<UpgradeConfig>(upgradeCsv, 'upgrade');
+export const WAVE_TABLE = parseTableCsv<WaveConfig>(waveCsv, 'wave');
+export const XP_TABLE = parseTableCsv<XPConfig>(xpCsv, 'xp');
+
+export function getPlayerById(id: string): PlayerConfig | undefined { return lookupById(PLAYER_TABLE, id); }
+export function getEnemyById(id: string): EnemyConfig | undefined { return lookupById(ENEMY_TABLE, id); }
+export function getBossById(id: string): BossConfig | undefined { return lookupById(BOSS_TABLE, id); }
+export function getWeaponById(id: string): WeaponConfig | undefined { return lookupById(WEAPON_TABLE, id); }
+export function getWaveConfig(id: string = 'wave_default'): WaveConfig | undefined { return lookupById(WAVE_TABLE, id); }
+export function getXPConfig(id: string = 'default'): XPConfig | undefined { return lookupById(XP_TABLE, id); }
+
+export const DEFAULT_PLAYER_ID = 'warrior';
+export const DEFAULT_ENEMY_ID = 'basic';
+export const DEFAULT_BOSS_ID = 'brute';
+export const DEFAULT_WEAPON_ID = 'basic_gun';
+
+const dp = getPlayerById(DEFAULT_PLAYER_ID)!;
+const de = getEnemyById(DEFAULT_ENEMY_ID)!;
+const db = getBossById(DEFAULT_BOSS_ID)!;
+const dw = getWeaponById(DEFAULT_WEAPON_ID)!;
+const dwv = getWaveConfig()!;
+const dxp = getXPConfig()!;
 
 export const GAME_WIDTH = 750;
 export const GAME_HEIGHT = 1334;
 export const WORLD_WIDTH = 4000;
 export const WORLD_HEIGHT = 4000;
 
-export const PLAYER_SPEED = p.PLAYER_SPEED;
-export const PLAYER_MAX_HP = p.PLAYER_MAX_HP;
-export const PLAYER_PICKUP_RANGE = p.PLAYER_PICKUP_RANGE;
-export const PLAYER_INVINCIBLE_MS = p.PLAYER_INVINCIBLE_MS;
-export const PLAYER_SIZE = p.PLAYER_SIZE;
+export const PLAYER_SPEED = dp.speed;
+export const PLAYER_MAX_HP = dp.maxHp;
+export const PLAYER_PICKUP_RANGE = dp.pickupRange;
+export const PLAYER_INVINCIBLE_MS = dp.invincibleMs;
+export const PLAYER_SIZE = dp.size;
 
-export const ENEMY_BASE_SPEED = e.ENEMY_BASE_SPEED;
-export const ENEMY_BASE_HP = e.ENEMY_BASE_HP;
-export const ENEMY_BASE_DAMAGE = e.ENEMY_BASE_DAMAGE;
-export const ENEMY_BASE_XP = e.ENEMY_BASE_XP;
-export const ENEMY_SIZE = e.ENEMY_SIZE;
+export const ENEMY_BASE_SPEED = de.speed;
+export const ENEMY_BASE_HP = de.hp;
+export const ENEMY_BASE_DAMAGE = de.damage;
+export const ENEMY_BASE_XP = de.xpReward;
+export const ENEMY_SIZE = de.size;
 
-export const BOSS_HP_MULTIPLIER = b.BOSS_HP_MULTIPLIER;
-export const BOSS_DAMAGE_MULTIPLIER = b.BOSS_DAMAGE_MULTIPLIER;
-export const BOSS_SPEED_MULTIPLIER = b.BOSS_SPEED_MULTIPLIER;
-export const BOSS_SIZE = b.BOSS_SIZE;
-export const BOSS_XP_MULTIPLIER = b.BOSS_XP_MULTIPLIER;
-export const BOSS_WAVE_INTERVAL = b.BOSS_WAVE_INTERVAL;
+export const BOSS_HP_MULTIPLIER = db.hp / de.hp;
+export const BOSS_DAMAGE_MULTIPLIER = db.damage / de.damage;
+export const BOSS_SPEED_MULTIPLIER = db.speed / de.speed;
+export const BOSS_SIZE = db.size;
+export const BOSS_XP_MULTIPLIER = db.xpReward / de.xpReward;
+export const BOSS_WAVE_INTERVAL = db.waveInterval;
 
-export const WEAPON_BASE_DAMAGE = w.WEAPON_BASE_DAMAGE;
-export const WEAPON_BASE_FIRE_RATE = w.WEAPON_BASE_FIRE_RATE;
-export const WEAPON_BULLET_SPEED = w.WEAPON_BULLET_SPEED;
-export const BULLET_SIZE = w.BULLET_SIZE;
+export const WEAPON_BASE_DAMAGE = dw.damage;
+export const WEAPON_BASE_FIRE_RATE = dw.fireRate;
+export const WEAPON_BULLET_SPEED = dw.bulletSpeed;
+export const BULLET_SIZE = dw.bulletSize;
 
-export const XP_ORB_SIZE = x.XP_ORB_SIZE;
-export const XP_BASE_TO_LEVEL = x.XP_BASE_TO_LEVEL;
-export const XP_LEVEL_SCALING = x.XP_LEVEL_SCALING;
-export const XP_ATTRACT_SPEED = x.XP_ATTRACT_SPEED;
+export const XP_ORB_SIZE = dxp.orbSize;
+export const XP_BASE_TO_LEVEL = dp.xpBase;
+export const XP_LEVEL_SCALING = dp.xpScaling;
+export const XP_ATTRACT_SPEED = dxp.attractSpeed;
 
-export const WAVE_DURATION = wv.WAVE_DURATION;
-export const SPAWN_INTERVAL_BASE = wv.SPAWN_INTERVAL_BASE;
-export const SPAWN_INTERVAL_MIN = wv.SPAWN_INTERVAL_MIN;
-export const SPAWN_COUNT_BASE = wv.SPAWN_COUNT_BASE;
-export const ENEMY_HP_SCALING = wv.ENEMY_HP_SCALING;
-export const ENEMY_SPEED_SCALING = wv.ENEMY_SPEED_SCALING;
-export const SPAWN_INTERVAL_REDUCTION = wv.SPAWN_INTERVAL_REDUCTION;
+export const WAVE_DURATION = dwv.duration;
+export const SPAWN_INTERVAL_BASE = dwv.spawnIntervalBase;
+export const SPAWN_INTERVAL_MIN = dwv.spawnIntervalMin;
+export const SPAWN_COUNT_BASE = dwv.spawnCountBase;
+export const ENEMY_HP_SCALING = dwv.hpScaling;
+export const ENEMY_SPEED_SCALING = dwv.speedScaling;
+export const SPAWN_INTERVAL_REDUCTION = dwv.intervalReduction;
 
 export const UPGRADE_CHOICES = 3;
 

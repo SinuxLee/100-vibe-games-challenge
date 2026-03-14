@@ -1,7 +1,7 @@
 import { Player } from '../entities/Player';
 import { WeaponSystem } from './WeaponSystem';
-import { parseCsv } from '../utils/csvLoader';
-import upgradeCsv from '../data/upgrade.csv?raw';
+import { UPGRADE_TABLE } from '../config';
+import { UpgradeConfig } from '../utils/csvLoader';
 import Phaser from 'phaser';
 
 export interface UpgradeDef {
@@ -10,6 +10,7 @@ export interface UpgradeDef {
   description: string;
   maxLevel: number;
   currentLevel: number;
+  forCharacter: string;
   apply: (player: Player, weapons: WeaponSystem) => void;
 }
 
@@ -38,23 +39,27 @@ function buildApplyFn(type: string, stat: string, factor: number): (p: Player, w
   return () => {};
 }
 
-function loadUpgradePool(): UpgradeDef[] {
-  const rows = parseCsv(upgradeCsv);
-  return rows.map((row) => ({
+function buildPoolFromTable(table: UpgradeConfig[]): UpgradeDef[] {
+  return table.map((row) => ({
     id: row.id,
     name: row.name,
     description: row.description,
-    maxLevel: Number(row.maxLevel),
+    maxLevel: row.maxLevel,
     currentLevel: 0,
-    apply: buildApplyFn(row.type, row.stat, Number(row.factor)),
+    forCharacter: row.forCharacter,
+    apply: buildApplyFn(row.type, row.stat, row.factor),
   }));
 }
 
-let upgradePool: UpgradeDef[] = loadUpgradePool();
+let upgradePool: UpgradeDef[] = buildPoolFromTable(UPGRADE_TABLE);
 
 export class UpgradeSystem {
-  static getRandomUpgrades(count: number, _player: Player, _weapons: WeaponSystem): UpgradeDef[] {
-    const available = upgradePool.filter((u) => u.currentLevel < u.maxLevel);
+  static getRandomUpgrades(count: number, player: Player, _weapons: WeaponSystem): UpgradeDef[] {
+    const charId = player.characterId;
+    const available = upgradePool.filter(
+      (u) => u.currentLevel < u.maxLevel
+        && (u.forCharacter === 'all' || u.forCharacter === charId),
+    );
     const shuffled = Phaser.Utils.Array.Shuffle([...available]);
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
@@ -70,7 +75,7 @@ export class UpgradeSystem {
   }
 
   static reset(): void {
-    upgradePool = loadUpgradePool();
+    upgradePool = buildPoolFromTable(UPGRADE_TABLE);
   }
 
   static getPool(): UpgradeDef[] {

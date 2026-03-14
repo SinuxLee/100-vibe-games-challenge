@@ -1,9 +1,10 @@
+import Phaser from 'phaser';
 import {
-  WAVE_DURATION, SPAWN_INTERVAL_BASE, SPAWN_INTERVAL_MIN,
-  SPAWN_COUNT_BASE, ENEMY_HP_SCALING, ENEMY_SPEED_SCALING,
-  SPAWN_INTERVAL_REDUCTION, BOSS_WAVE_INTERVAL,
   GAME_WIDTH, GAME_HEIGHT,
+  getWaveConfig, getEnemyById, getBossById,
+  DEFAULT_ENEMY_ID, DEFAULT_BOSS_ID,
 } from '../config';
+import { parseEnemyWeights } from '../utils/csvLoader';
 import { GameScene } from '../scenes/GameScene';
 import { randomEdgePoint } from '../utils/helpers';
 import { SaveSystem } from './SaveSystem';
@@ -20,12 +21,13 @@ export class WaveSystem {
   }
 
   update(_time: number, delta: number): void {
+    const wc = getWaveConfig()!;
     this.waveElapsed += delta;
     this.spawnTimer += delta;
 
     const spawnInterval = Math.max(
-      SPAWN_INTERVAL_MIN,
-      SPAWN_INTERVAL_BASE - (this.currentWave - 1) * SPAWN_INTERVAL_REDUCTION,
+      wc.spawnIntervalMin,
+      wc.spawnIntervalBase - (this.currentWave - 1) * wc.intervalReduction,
     );
 
     if (this.spawnTimer >= spawnInterval) {
@@ -33,24 +35,40 @@ export class WaveSystem {
       this.spawnWaveEnemies();
     }
 
-    if (this.waveElapsed >= WAVE_DURATION) {
+    if (this.waveElapsed >= wc.duration) {
       this.advanceWave();
     }
   }
 
   private spawnWaveEnemies(): void {
+    const wc = getWaveConfig()!;
     const player = this.scene.player;
-    const count = SPAWN_COUNT_BASE + Math.floor(this.currentWave * 0.5);
-    const hpMul = 1 + (this.currentWave - 1) * ENEMY_HP_SCALING;
-    const speedMul = 1 + (this.currentWave - 1) * ENEMY_SPEED_SCALING;
+    const count = wc.spawnCountBase + Math.floor(this.currentWave * 0.5);
+    const hpMul = 1 + (this.currentWave - 1) * wc.hpScaling;
+    const speedMul = 1 + (this.currentWave - 1) * wc.speedScaling;
     const halfW = GAME_WIDTH / 2;
     const halfH = GAME_HEIGHT / 2;
+
+    const weights = parseEnemyWeights(wc.enemies);
+    const totalWeight = weights.reduce((sum, w) => sum + w.weight, 0);
 
     for (let i = 0; i < count; i++) {
       const pos = randomEdgePoint(player.x, player.y, halfW, halfH);
       const clampedX = Phaser.Math.Clamp(pos.x, 0, this.scene.physics.world.bounds.width);
       const clampedY = Phaser.Math.Clamp(pos.y, 0, this.scene.physics.world.bounds.height);
-      this.scene.spawnEnemy(clampedX, clampedY, hpMul, speedMul);
+
+      let roll = Math.random() * totalWeight;
+      let selectedEnemyId = DEFAULT_ENEMY_ID;
+      for (const w of weights) {
+        roll -= w.weight;
+        if (roll <= 0) {
+          selectedEnemyId = w.enemyId;
+          break;
+        }
+      }
+
+      const enemyCfg = getEnemyById(selectedEnemyId);
+      this.scene.spawnEnemy(clampedX, clampedY, hpMul, speedMul, enemyCfg);
     }
   }
 
@@ -60,21 +78,25 @@ export class WaveSystem {
 
     SoundManager.playWaveStart();
 
-    if (this.currentWave % BOSS_WAVE_INTERVAL === 0) {
-      this.spawnBoss();
+    const wc = getWaveConfig()!;
+    const bossCfg = getBossById(wc.bossId || DEFAULT_BOSS_ID);
+    const bossInterval = bossCfg?.waveInterval ?? 5;
+
+    if (this.currentWave % bossInterval === 0) {
+      this.spawnBoss(bossCfg);
     }
 
     this.autoSave();
   }
 
-  private spawnBoss(): void {
+  private spawnBoss(bossCfg?: ReturnType<typeof getBossById>): void {
     const player = this.scene.player;
     const halfW = GAME_WIDTH / 2;
     const halfH = GAME_HEIGHT / 2;
     const pos = randomEdgePoint(player.x, player.y, halfW, halfH, 150);
     const clampedX = Phaser.Math.Clamp(pos.x, 0, this.scene.physics.world.bounds.width);
     const clampedY = Phaser.Math.Clamp(pos.y, 0, this.scene.physics.world.bounds.height);
-    this.scene.spawnBoss(clampedX, clampedY, this.currentWave);
+    this.scene.spawnBoss(clampedX, clampedY, this.currentWave, bossCfg ?? undefined);
 
     SoundManager.playBossSpawn();
     this.scene.cameras.main.shake(300, 0.008);
