@@ -1,39 +1,19 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, COLORS } from '../config';
+import { t } from '../i18n';
 
 interface TutorialStep {
-  title: string;
-  body: string;
+  titleKey: string;
+  bodyKey: string;
   icon: string;
-  spotlight?: { x: number; y: number; r: number };
 }
 
 const STEPS: TutorialStep[] = [
-  {
-    title: 'Move',
-    body: 'Use WASD keys or drag the\nleft side of screen to move.',
-    icon: '🕹️',
-  },
-  {
-    title: 'Auto-Attack',
-    body: 'Your weapon fires automatically\nat the nearest enemy.',
-    icon: '🔫',
-  },
-  {
-    title: 'Collect XP',
-    body: 'Enemies drop XP orbs.\nWalk near them to pick up.',
-    icon: '💎',
-  },
-  {
-    title: 'Level Up',
-    body: 'Choose 1 of 3 upgrades\nwhen you level up.',
-    icon: '⬆️',
-  },
-  {
-    title: 'Survive',
-    body: 'Waves get harder over time.\nBoss appears every 5 waves!',
-    icon: '💀',
-  },
+  { titleKey: 'tut_move_title', bodyKey: 'tut_move_body', icon: '🕹️' },
+  { titleKey: 'tut_attack_title', bodyKey: 'tut_attack_body', icon: '🔫' },
+  { titleKey: 'tut_xp_title', bodyKey: 'tut_xp_body', icon: '💎' },
+  { titleKey: 'tut_levelup_title', bodyKey: 'tut_levelup_body', icon: '⬆️' },
+  { titleKey: 'tut_survive_title', bodyKey: 'tut_survive_body', icon: '💀' },
 ];
 
 const STORAGE_KEY = 'survivor_tutorial_done';
@@ -97,7 +77,7 @@ export class TutorialScene extends Phaser.Scene {
     }).setOrigin(0.5);
     elements.push(icon);
 
-    const title = this.add.text(cx, cardY + 100, step.title, {
+    const title = this.add.text(cx, cardY + 100, t(step.titleKey), {
       fontSize: '32px',
       fontFamily: 'monospace',
       color: '#ffd700',
@@ -105,7 +85,7 @@ export class TutorialScene extends Phaser.Scene {
     }).setOrigin(0.5);
     elements.push(title);
 
-    const body = this.add.text(cx, cardY + 150, step.body, {
+    const body = this.add.text(cx, cardY + 150, t(step.bodyKey), {
       fontSize: '18px',
       fontFamily: 'monospace',
       color: '#cfd8dc',
@@ -123,7 +103,9 @@ export class TutorialScene extends Phaser.Scene {
     elements.push(dots);
 
     const isLast = index === STEPS.length - 1;
-    const hintText = isLast ? 'Tap to Start!' : `Tap to continue  (${index + 1}/${STEPS.length})`;
+    const hintText = isLast
+      ? t('tut_tap_start')
+      : t('tut_tap_continue', { n: index + 1, total: STEPS.length });
     const hint = this.add.text(cx, height * 0.82, hintText, {
       fontSize: '16px',
       fontFamily: 'monospace',
@@ -139,7 +121,7 @@ export class TutorialScene extends Phaser.Scene {
     elements.push(hint);
 
     if (index > 0) {
-      const skipBtn = this.add.text(width - 20, 20, 'SKIP >', {
+      const skipBtn = this.add.text(width - 20, 20, t('tut_skip'), {
         fontSize: '16px',
         fontFamily: 'monospace',
         color: '#607d8b',

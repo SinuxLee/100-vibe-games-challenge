@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { COLORS, GAME_WIDTH } from '../config';
 import { formatTime } from '../utils/helpers';
 import { SoundManager } from '../systems/SoundManager';
+import { t } from '../i18n';
 
 export class HUDScene extends Phaser.Scene {
   private hpBarBg!: Phaser.GameObjects.Graphics;
@@ -43,9 +44,9 @@ export class HUDScene extends Phaser.Scene {
       color: '#ffffff',
     };
 
-    this.levelText = this.add.text(20, topY + 40, 'Lv.1', textStyle);
-    this.waveText = this.add.text(GAME_WIDTH - 20, topY + 40, 'Wave 1', textStyle).setOrigin(1, 0);
-    this.killsText = this.add.text(20, topY + 68, 'Kills: 0', textStyle);
+    this.levelText = this.add.text(20, topY + 40, t('lv', { n: 1 }), textStyle);
+    this.waveText = this.add.text(GAME_WIDTH - 20, topY + 40, t('wave', { n: 1 }), textStyle).setOrigin(1, 0);
+    this.killsText = this.add.text(20, topY + 68, t('kills', { n: 0 }), textStyle);
     this.timerText = this.add.text(GAME_WIDTH - 20, topY + 68, '00:00', textStyle).setOrigin(1, 0);
 
     this.registry.events.on('changedata', this.onRegistryChange, this);
@@ -53,7 +54,7 @@ export class HUDScene extends Phaser.Scene {
       this.registry.events.off('changedata', this.onRegistryChange, this);
     });
 
-    this.muteBtn = this.add.text(GAME_WIDTH - 20, topY + 96, SoundManager.isMuted() ? 'MUTED' : 'SOUND', {
+    this.muteBtn = this.add.text(GAME_WIDTH - 20, topY + 96, SoundManager.isMuted() ? t('muted') : t('sound'), {
       fontSize: '16px',
       fontFamily: 'monospace',
       color: '#90a4ae',
@@ -61,7 +62,7 @@ export class HUDScene extends Phaser.Scene {
 
     this.muteBtn.on('pointerdown', () => {
       const muted = SoundManager.toggleMute();
-      this.muteBtn.setText(muted ? 'MUTED' : 'SOUND');
+      this.muteBtn.setText(muted ? t('muted') : t('sound'));
     });
 
     const gmBtn = this.add.text(20, topY + 96, 'GM', {
@@ -79,8 +80,10 @@ export class HUDScene extends Phaser.Scene {
     this.fpsText = this.add.text(GAME_WIDTH / 2, topY + 96, '', {
       fontSize: '14px',
       fontFamily: 'monospace',
-      color: '#66bb6a',
-    }).setOrigin(0.5, 0).setAlpha(0.7);
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5, 0);
 
     if (this.input.keyboard) {
       this.input.keyboard.on('keydown-ESC', () => this.togglePause());
@@ -112,13 +115,13 @@ export class HUDScene extends Phaser.Scene {
 
       const { width, height } = this.scale;
       const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
-      const txt = this.add.text(width / 2, height / 2, 'PAUSED', {
+      const txt = this.add.text(width / 2, height / 2, t('paused'), {
         fontSize: '48px',
         fontFamily: 'monospace',
         color: '#ffffff',
         fontStyle: 'bold',
       }).setOrigin(0.5);
-      const hint = this.add.text(width / 2, height / 2 + 60, 'Press ESC to resume', {
+      const hint = this.add.text(width / 2, height / 2 + 60, t('pause_hint'), {
         fontSize: '18px',
         fontFamily: 'monospace',
         color: '#90a4ae',
@@ -160,13 +163,13 @@ export class HUDScene extends Phaser.Scene {
         break;
       }
       case 'level':
-        this.levelText.setText(`Lv.${value}`);
+        this.levelText.setText(t('lv', { n: value }));
         break;
       case 'wave':
-        this.waveText.setText(`Wave ${value}`);
+        this.waveText.setText(t('wave', { n: value }));
         break;
       case 'kills':
-        this.killsText.setText(`Kills: ${value}`);
+        this.killsText.setText(t('kills', { n: value }));
         break;
       case 'time':
         this.timerText.setText(formatTime(value as number));

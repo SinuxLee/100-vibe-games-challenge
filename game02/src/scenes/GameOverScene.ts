@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { COLORS } from '../config';
 import { formatTime } from '../utils/helpers';
 import { SoundManager } from '../systems/SoundManager';
+import { t } from '../i18n';
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -11,7 +12,7 @@ export class GameOverScene extends Phaser.Scene {
   create(data: { kills: number; time: number; wave: number; level: number }): void {
     const { width, height } = this.scale;
 
-    this.add.text(width / 2, height * 0.18, 'GAME OVER', {
+    this.add.text(width / 2, height * 0.18, t('game_over'), {
       fontSize: '52px',
       fontFamily: 'monospace',
       color: '#e53935',
@@ -19,10 +20,10 @@ export class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     const stats = [
-      `Kills: ${data.kills}`,
-      `Time: ${formatTime(data.time)}`,
-      `Wave: ${data.wave}`,
-      `Level: ${data.level}`,
+      t('stat_kills', { n: data.kills }),
+      t('stat_time', { n: formatTime(data.time) }),
+      t('stat_wave', { n: data.wave }),
+      t('stat_level', { n: data.level }),
     ];
 
     stats.forEach((line, i) => {
@@ -37,13 +38,13 @@ export class GameOverScene extends Phaser.Scene {
 
     const bestKills = localStorage.getItem('survivor_best_kills') || '0';
     const bestTime = localStorage.getItem('survivor_best_time') || '0';
-    this.add.text(width / 2, height * 0.6, `Best: ${bestKills} kills / ${formatTime(Number(bestTime))}`, {
+    this.add.text(width / 2, height * 0.6, t('best_score', { kills: bestKills, time: formatTime(Number(bestTime)) }), {
       fontSize: '18px',
       fontFamily: 'monospace',
       color: '#ffd700',
     }).setOrigin(0.5);
 
-    const restartBtn = this.add.text(width / 2, height * 0.72, 'RESTART', {
+    const restartBtn = this.add.text(width / 2, height * 0.72, t('restart'), {
       fontSize: '30px',
       fontFamily: 'monospace',
       color: '#ffffff',
@@ -56,7 +57,7 @@ export class GameOverScene extends Phaser.Scene {
       this.scene.start('GameScene');
     });
 
-    const menuBtn = this.add.text(width / 2, height * 0.82, 'MENU', {
+    const menuBtn = this.add.text(width / 2, height * 0.82, t('menu'), {
       fontSize: '26px',
       fontFamily: 'monospace',
       color: '#90a4ae',

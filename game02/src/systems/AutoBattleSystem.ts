@@ -2,12 +2,23 @@ import { GameScene } from '../scenes/GameScene';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/Enemy';
 import { XPOrb } from '../entities/XPOrb';
+import { UpgradeDef } from './UpgradeSystem';
 import { distanceBetween } from '../utils/helpers';
 
 const KITE_HP_RATIO = 0.3;
 const SAFE_DISTANCE = 200;
 const ORB_CHASE_RANGE = 400;
 const ENEMY_ENGAGE_RANGE = 600;
+
+const UPGRADE_PRIORITY: Record<string, number> = {
+  bullet_count: 10,
+  damage_up: 9,
+  fire_rate_up: 8,
+  pierce: 7,
+  max_hp: 6,
+  speed_up: 5,
+  bullet_speed: 4,
+};
 
 export class AutoBattleSystem {
   enabled: boolean = false;
@@ -29,8 +40,31 @@ export class AutoBattleSystem {
     }
   }
 
-  autoSelectUpgrade(): number {
-    return 0;
+  autoSelectUpgrade(upgrades: UpgradeDef[]): number {
+    if (upgrades.length === 0) return 0;
+
+    const player = this.scene.player;
+    const hpRatio = player.hp / player.maxHp;
+
+    let bestIdx = 0;
+    let bestScore = -Infinity;
+
+    upgrades.forEach((upg, i) => {
+      let score = UPGRADE_PRIORITY[upg.id] ?? 3;
+
+      if (upg.id === 'max_hp' && hpRatio < 0.4) score += 6;
+      if (upg.id === 'damage_up' && this.scene.weaponSystem.weapons[0].bulletCount > 2) score += 3;
+      if (upg.id === 'pierce' && this.scene.weaponSystem.weapons[0].bulletCount > 1) score += 2;
+
+      score -= upg.currentLevel * 0.5;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    });
+
+    return bestIdx;
   }
 
   private pickMoveTarget(player: Player): { x: number; y: number; flee: boolean } | null {

@@ -53,15 +53,77 @@ function buildPoolFromTable(table: UpgradeConfig[]): UpgradeDef[] {
 
 let upgradePool: UpgradeDef[] = buildPoolFromTable(UPGRADE_TABLE);
 
+function calcWeight(upgrade: UpgradeDef, player: Player, weapons: WeaponSystem): number {
+  let weight = 1.0;
+  const hpRatio = player.hp / player.maxHp;
+  const weapon = weapons.weapons[0];
+
+  switch (upgrade.id) {
+    case 'max_hp':
+      if (hpRatio < 0.5) weight += 1.0;
+      else if (hpRatio < 0.8) weight += 0.3;
+      break;
+    case 'damage_up':
+      if (weapon.bulletCount > 2) weight += 0.5;
+      if (weapon.pierce > 1) weight += 0.3;
+      break;
+    case 'pierce':
+      if (weapon.bulletCount > 1) weight += 0.5;
+      break;
+    case 'fire_rate_up':
+      if (weapon.fireRate > 400) weight += 0.5;
+      break;
+    case 'speed_up':
+      if (player.speed > 300) weight -= 0.3;
+      else weight += 0.2;
+      break;
+    case 'bullet_count':
+      weight += 0.3;
+      break;
+    case 'bullet_speed':
+      if (weapon.bulletSpeed < 400) weight += 0.3;
+      break;
+  }
+
+  const levelPenalty = upgrade.currentLevel * 0.15;
+  weight -= levelPenalty;
+
+  return Math.max(0.1, weight);
+}
+
+function weightedRandomPick(candidates: UpgradeDef[], count: number, player: Player, weapons: WeaponSystem): UpgradeDef[] {
+  const pool = [...candidates];
+  const result: UpgradeDef[] = [];
+
+  for (let i = 0; i < count && pool.length > 0; i++) {
+    const weights = pool.map((u) => calcWeight(u, player, weapons));
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+    let roll = Math.random() * totalWeight;
+    let picked = 0;
+    for (let j = 0; j < weights.length; j++) {
+      roll -= weights[j];
+      if (roll <= 0) {
+        picked = j;
+        break;
+      }
+    }
+
+    result.push(pool[picked]);
+    pool.splice(picked, 1);
+  }
+
+  return result;
+}
+
 export class UpgradeSystem {
-  static getRandomUpgrades(count: number, player: Player, _weapons: WeaponSystem): UpgradeDef[] {
+  static getRandomUpgrades(count: number, player: Player, weapons: WeaponSystem): UpgradeDef[] {
     const charId = player.characterId;
     const available = upgradePool.filter(
       (u) => u.currentLevel < u.maxLevel
         && (u.forCharacter === 'all' || u.forCharacter === charId),
     );
-    const shuffled = Phaser.Utils.Array.Shuffle([...available]);
-    return shuffled.slice(0, Math.min(count, shuffled.length));
+    return weightedRandomPick(available, Math.min(count, available.length), player, weapons);
   }
 
   static apply(upgrade: UpgradeDef, player: Player, weapons: WeaponSystem): void {

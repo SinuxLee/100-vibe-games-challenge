@@ -3,6 +3,7 @@ import { COLORS, GAME_WIDTH, GAME_HEIGHT, UPGRADE_CHOICES } from '../config';
 import { UpgradeSystem, UpgradeDef } from '../systems/UpgradeSystem';
 import { SoundManager } from '../systems/SoundManager';
 import { GameScene } from './GameScene';
+import { t, tUpgradeName, tUpgradeDesc } from '../i18n';
 
 export class LevelUpScene extends Phaser.Scene {
   constructor() {
@@ -18,7 +19,7 @@ export class LevelUpScene extends Phaser.Scene {
     overlay.fillStyle(0x000000, 0.65);
     overlay.fillRect(0, 0, width, height);
 
-    this.add.text(width / 2, height * 0.15, 'LEVEL UP!', {
+    this.add.text(width / 2, height * 0.15, t('level_up'), {
       fontSize: '42px',
       fontFamily: 'monospace',
       color: '#ffd700',
@@ -31,10 +32,10 @@ export class LevelUpScene extends Phaser.Scene {
     const gap = 20;
 
     if (gameScene.autoBattle?.enabled && upgrades.length > 0) {
-      const pickIndex = gameScene.autoBattle.autoSelectUpgrade();
+      const pickIndex = gameScene.autoBattle.autoSelectUpgrade(upgrades);
       const chosenIdx = Math.min(pickIndex, upgrades.length - 1);
 
-      this.add.text(width / 2, height * 0.21, 'AUTO-PICK', {
+      this.add.text(width / 2, height * 0.21, t('auto_pick'), {
         fontSize: '16px',
         fontFamily: 'monospace',
         color: '#90a4ae',
@@ -76,14 +77,15 @@ export class LevelUpScene extends Phaser.Scene {
     card.strokeRoundedRect(x - w / 2, y, w, h, 12);
 
     const nameColor = highlighted ? '#66bb6a' : '#78909c';
-    this.add.text(x, y + 20, upgrade.name + (highlighted ? '  ✦' : ''), {
+    const displayName = tUpgradeName(upgrade.id);
+    this.add.text(x, y + 20, displayName + (highlighted ? '  ✦' : ''), {
       fontSize: '24px',
       fontFamily: 'monospace',
       color: nameColor,
       fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
-    this.add.text(x, y + 55, upgrade.description, {
+    this.add.text(x, y + 55, tUpgradeDesc(upgrade.id), {
       fontSize: '16px',
       fontFamily: 'monospace',
       color: highlighted ? '#a5d6a7' : '#607d8b',
@@ -111,14 +113,14 @@ export class LevelUpScene extends Phaser.Scene {
     card.lineStyle(2, COLORS.gold, 0.6);
     card.strokeRoundedRect(x - w / 2, y, w, h, 12);
 
-    this.add.text(x, y + 20, upgrade.name, {
+    this.add.text(x, y + 20, tUpgradeName(upgrade.id), {
       fontSize: '24px',
       fontFamily: 'monospace',
       color: '#ffd700',
       fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
-    this.add.text(x, y + 55, upgrade.description, {
+    this.add.text(x, y + 55, tUpgradeDesc(upgrade.id), {
       fontSize: '16px',
       fontFamily: 'monospace',
       color: '#b0bec5',

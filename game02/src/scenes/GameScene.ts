@@ -193,13 +193,39 @@ export class GameScene extends Phaser.Scene {
 
     SoundManager.playHit();
 
-    const hitFlash = this.add.circle(enemy.x, enemy.y, 10, 0xffffff, 0.6);
+    const impactX = bullet.x;
+    const impactY = bullet.y;
+    const particleCount = 6;
+    for (let i = 0; i < particleCount; i++) {
+      const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+      const speed = 40 + Math.random() * 60;
+      const size = 3 + Math.random() * 4;
+      const colors = [0xffaa00, 0xff6600, 0xffcc00, 0xffffff];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      const spark = this.add.circle(impactX, impactY, size, color, 0.9);
+      spark.setDepth(50);
+      this.tweens.add({
+        targets: spark,
+        x: impactX + Math.cos(angle) * speed,
+        y: impactY + Math.sin(angle) * speed,
+        scaleX: 0,
+        scaleY: 0,
+        alpha: 0,
+        duration: 150 + Math.random() * 100,
+        ease: 'Quad.easeOut',
+        onComplete: () => spark.destroy(),
+      });
+    }
+
+    const hitFlash = this.add.circle(impactX, impactY, 8, 0xffffff, 0.8);
+    hitFlash.setDepth(51);
     this.tweens.add({
       targets: hitFlash,
-      scaleX: 2,
-      scaleY: 2,
+      scaleX: 2.5,
+      scaleY: 2.5,
       alpha: 0,
-      duration: 120,
+      duration: 100,
       ease: 'Quad.easeOut',
       onComplete: () => hitFlash.destroy(),
     });
