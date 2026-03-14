@@ -1,0 +1,10 @@
+{
+  "name": "games-challenge",
+  "private": true,
+  "description": "100 web games built with vibe coding",
+  "scripts": {
+    "build:pages": "bun run scripts/build-pages.js",
+    "preview:pages": "bun run scripts/serve-pages.js",
+    "test:pages": "bun run build:pages && bun run preview:pages"
+  }
+}

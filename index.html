@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 Games Challenge — 百款游戏入口</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f14;
+      --surface: #1a1a24;
+      --border: #2a2a3a;
+      --text: #e8e8ed;
+      --muted: #8888a0;
+      --accent: #7c9cff;
+      --accent-hover: #9ab2ff;
+      --done: #5dd9a0;
+      --soon: #6b6b8a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .lang-wrap {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+    }
+    .lang-btn {
+      font-family: inherit;
+      font-size: 12px;
+      padding: 6px 10px;
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+    .lang-btn:hover { color: var(--text); border-color: var(--muted); }
+    .lang-btn.active { color: var(--accent); border-color: var(--accent); }
+    header {
+      padding: 48px 24px 32px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: border-color .15s, transform .1s;
+    }
+    .card a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+    }
+    .card.done:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .card.done a:hover { color: var(--accent-hover); }
+    .card.soon {
+      opacity: 0.75;
+      cursor: default;
+    }
+    .card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .card.done .card-num { color: var(--done); }
+    .card-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .card.soon .card-title { color: var(--soon); }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="lang-wrap">
+    <button type="button" class="lang-btn active" data-lang="zh">中文</button>
+    <button type="button" class="lang-btn" data-lang="en">English</button>
+  </div>
+
+  <header>
+    <h1 data-zh="百款游戏挑战" data-en="100 Games Challenge">百款游戏挑战</h1>
+    <p class="subtitle" data-zh="Vibe Coding 开发的网页小游戏合集 · 点击卡片进入游戏" data-en="A collection of web games built with vibe coding · Click a card to play">Vibe Coding 开发的网页小游戏合集 · 点击卡片进入游戏</p>
+  </header>
+
+  <main>
+    <div class="grid" id="game-grid"></div>
+  </main>
+
+  <footer>
+    <p data-zh="说明与运行方式见" data-en="See">说明与运行方式见 <a href="README.md">README</a> <span data-zh="与" data-en="and">与</span> <a href="docs/README.zh-CN.md">docs/README.zh-CN.md</a> / <a href="docs/README.en.md">docs/README.en.md</a></p>
+    <p class="footer-note" data-zh="Game 02 需在 game02 目录执行 bun run dev 或先 bun run build 后打开 dist/index.html。" data-en="Game 02: run bun run dev in game02/ or open game02/dist/index.html after build." style="margin-top:8px;font-size:12px;opacity:0.85;"></p>
+  </footer>
+
+  <script>
+    (function () {
+      const GAMES = [
+        { id: 1, done: true, href: 'game01/index.html', titleZh: '打地鼠', titleEn: 'Whack-a-Mole', descZh: '点击地鼠得分', descEn: 'Click moles to score' },
+        { id: 2, done: true, href: 'game02/index.html', titleZh: 'Survivor', titleEn: 'Survivor', descZh: '幸存者类俯视角射击', descEn: 'Survivor-like top-down shooter' },
+      ];
+      const totalSlots = 100;
+      const grid = document.getElementById('game-grid');
+      const t = (key) => document.documentElement.lang.startsWith('zh') ? key + 'Zh' : key + 'En';
+
+      function render(lang) {
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+          el.textContent = lang === 'zh' ? el.dataset.zh : el.dataset.en;
+        });
+        document.querySelectorAll('.card.done .card-title').forEach(el => {
+          if (el.dataset.titleZh) el.textContent = lang === 'zh' ? el.dataset.titleZh : el.dataset.titleEn;
+        });
+        document.querySelectorAll('.card.done .card-desc').forEach(el => {
+          if (el.dataset.descZh) el.textContent = lang === 'zh' ? el.dataset.descZh : el.dataset.descEn;
+        });
+        document.querySelectorAll('.card.soon .card-title').forEach(el => {
+          el.textContent = lang === 'zh' ? '即将推出' : 'Coming soon';
+        });
+      }
+
+      function getPreferredLang() {
+        try {
+          const saved = localStorage.getItem('games-hub-lang');
+          if (saved === 'zh' || saved === 'en') return saved;
+        } catch (_) {}
+        const nav = navigator;
+        const codes = [nav.language, nav.userLanguage].filter(Boolean);
+        if (nav.languages) codes.push(...nav.languages);
+        for (const code of codes) {
+          if (typeof code === 'string' && code.toLowerCase().startsWith('zh')) return 'zh';
+        }
+        return 'en';
+      }
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          render(lang);
+          try { localStorage.setItem('games-hub-lang', lang); } catch (_) {}
+        });
+      });
+
+      const lang = getPreferredLang();
+      render(lang);
+
+      const byId = {};
+      GAMES.forEach(g => { byId[g.id] = g; });
+
+      for (let i = 1; i <= totalSlots; i++) {
+        const game = byId[i];
+        const card = document.createElement('div');
+        card.className = 'card ' + (game && game.done ? 'done' : 'soon');
+        const num = String(i).padStart(3, '0');
+        if (game && game.done) {
+          card.innerHTML = '<span class="card-num">#' + num + '</span>' +
+            '<a href="' + game.href + '" target="_blank" rel="noopener">' +
+            '<span class="card-title" data-title-zh="' + game.titleZh + '" data-title-en="' + game.titleEn + '">' + (document.documentElement.lang.startsWith('zh') ? game.titleZh : game.titleEn) + '</span>' +
+            '<span class="card-desc" data-desc-zh="' + game.descZh + '" data-desc-en="' + game.descEn + '">' + (document.documentElement.lang.startsWith('zh') ? game.descZh : game.descEn) + '</span>' +
+            '</a>';
+        } else {
+          card.innerHTML = '<span class="card-num">#' + num + '</span>' +
+            '<span class="card-title" data-zh="即将推出" data-en="Coming soon">' + (document.documentElement.lang.startsWith('zh') ? '即将推出' : 'Coming soon') + '</span>';
+        }
+        grid.appendChild(card);
+      }
+
+    })();
+  </script>
+</body>
+</html>
