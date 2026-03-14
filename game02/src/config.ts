@@ -24,8 +24,21 @@ export function getPlayerById(id: string): PlayerConfig | undefined { return loo
 export function getEnemyById(id: string): EnemyConfig | undefined { return lookupById(ENEMY_TABLE, id); }
 export function getBossById(id: string): BossConfig | undefined { return lookupById(BOSS_TABLE, id); }
 export function getWeaponById(id: string): WeaponConfig | undefined { return lookupById(WEAPON_TABLE, id); }
-export function getWaveConfig(id: string = 'wave_default'): WaveConfig | undefined { return lookupById(WAVE_TABLE, id); }
+/** Get stage config for a given wave number. Each stage covers 5 waves; last stage repeats. */
+export function getWaveConfigForWave(waveNum: number): WaveConfig {
+  const idx = Math.min(Math.floor((waveNum - 1) / 5), WAVE_TABLE.length - 1);
+  return WAVE_TABLE[idx];
+}
+/** @deprecated use getWaveConfigForWave instead */
+export function getWaveConfig(id?: string): WaveConfig | undefined {
+  if (id) return lookupById(WAVE_TABLE, id);
+  return WAVE_TABLE[0];
+}
 export function getXPConfig(id: string = 'default'): XPConfig | undefined { return lookupById(XP_TABLE, id); }
+/** Get the current stage number (1-based) for a given wave */
+export function getStageForWave(waveNum: number): number {
+  return Math.min(Math.floor((waveNum - 1) / 5) + 1, WAVE_TABLE.length);
+}
 
 export const DEFAULT_PLAYER_ID = 'warrior';
 export const DEFAULT_ENEMY_ID = 'basic';
@@ -36,7 +49,7 @@ const dp = getPlayerById(DEFAULT_PLAYER_ID)!;
 const de = getEnemyById(DEFAULT_ENEMY_ID)!;
 const db = getBossById(DEFAULT_BOSS_ID)!;
 const dw = getWeaponById(DEFAULT_WEAPON_ID)!;
-const dwv = getWaveConfig()!;
+const dwv = WAVE_TABLE[0];
 const dxp = getXPConfig()!;
 
 export const GAME_WIDTH = 750;

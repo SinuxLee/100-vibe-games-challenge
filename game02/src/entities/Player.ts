@@ -18,7 +18,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   xpScaling: number;
   pickupRange: number;
   characterId: string;
-  private invincibleMs: number;
+  invincibleMs: number;
   private invincibleUntil: number = 0;
   private keys!: {
     W: Phaser.Input.Keyboard.Key;

@@ -157,7 +157,8 @@ export interface EnemyWeight {
 
 export function parseEnemyWeights(raw: string): EnemyWeight[] {
   if (!raw || raw.trim().length === 0) return [];
-  return raw.split(',').map((entry) => {
+  const sep = raw.includes(';') ? ';' : ',';
+  return raw.split(sep).map((entry) => {
     const [enemyId, w] = entry.trim().split(':');
     return { enemyId: enemyId.trim(), weight: Number(w) || 1 };
   });

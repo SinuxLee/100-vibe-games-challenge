@@ -12,11 +12,16 @@ const ENEMY_ENGAGE_RANGE = 600;
 
 const UPGRADE_PRIORITY: Record<string, number> = {
   bullet_count: 10,
+  multi_cast: 10,
   damage_up: 9,
+  crit_chance: 9,
   fire_rate_up: 8,
   pierce: 7,
   max_hp: 6,
+  shield: 6,
+  armor: 5,
   speed_up: 5,
+  magnet: 4,
   bullet_speed: 4,
 };
 
@@ -53,7 +58,10 @@ export class AutoBattleSystem {
       let score = UPGRADE_PRIORITY[upg.id] ?? 3;
 
       if (upg.id === 'max_hp' && hpRatio < 0.4) score += 6;
+      if (upg.id === 'shield' && hpRatio < 0.5) score += 5;
+      if (upg.id === 'armor' && hpRatio < 0.4) score += 4;
       if (upg.id === 'damage_up' && this.scene.weaponSystem.weapons[0].bulletCount > 2) score += 3;
+      if (upg.id === 'crit_chance' && this.scene.weaponSystem.weapons[0].bulletCount > 2) score += 3;
       if (upg.id === 'pierce' && this.scene.weaponSystem.weapons[0].bulletCount > 1) score += 2;
 
       score -= upg.currentLevel * 0.5;

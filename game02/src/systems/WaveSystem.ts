@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import {
   GAME_WIDTH, GAME_HEIGHT,
-  getWaveConfig, getEnemyById, getBossById,
-  DEFAULT_ENEMY_ID, DEFAULT_BOSS_ID,
+  getWaveConfigForWave, getStageForWave, getEnemyById, getBossById,
+  DEFAULT_ENEMY_ID,
 } from '../config';
 import { parseEnemyWeights } from '../utils/csvLoader';
 import { GameScene } from '../scenes/GameScene';
@@ -15,13 +15,19 @@ export class WaveSystem {
   private waveElapsed: number = 0;
   private spawnTimer: number = 0;
   private scene: GameScene;
+  private _lastStage: number = 1;
 
   constructor(scene: GameScene) {
     this.scene = scene;
+    this._lastStage = getStageForWave(this.currentWave);
+  }
+
+  get currentStage(): number {
+    return getStageForWave(this.currentWave);
   }
 
   update(_time: number, delta: number): void {
-    const wc = getWaveConfig()!;
+    const wc = getWaveConfigForWave(this.currentWave);
     this.waveElapsed += delta;
     this.spawnTimer += delta;
 
@@ -41,7 +47,7 @@ export class WaveSystem {
   }
 
   private spawnWaveEnemies(): void {
-    const wc = getWaveConfig()!;
+    const wc = getWaveConfigForWave(this.currentWave);
     const player = this.scene.player;
     const count = wc.spawnCountBase + Math.floor(this.currentWave * 0.5);
     const hpMul = 1 + (this.currentWave - 1) * wc.hpScaling;
@@ -78,8 +84,14 @@ export class WaveSystem {
 
     SoundManager.playWaveStart();
 
-    const wc = getWaveConfig()!;
-    const bossCfg = getBossById(wc.bossId || DEFAULT_BOSS_ID);
+    const newStage = getStageForWave(this.currentWave);
+    if (newStage !== this._lastStage) {
+      this._lastStage = newStage;
+      this.scene.events.emit('stageChanged', newStage);
+    }
+
+    const wc = getWaveConfigForWave(this.currentWave);
+    const bossCfg = getBossById(wc.bossId);
     const bossInterval = bossCfg?.waveInterval ?? 5;
 
     if (this.currentWave % bossInterval === 0) {

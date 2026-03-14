@@ -36,6 +36,12 @@ function buildApplyFn(type: string, stat: string, factor: number): (p: Player, w
   if (type === 'weapon' && stat === 'bulletSpeed') {
     return (_p, w) => { w.weapons[0].bulletSpeed = Math.floor(w.weapons[0].bulletSpeed * factor); };
   }
+  if (type === 'player' && stat === 'pickupRange') {
+    return (p) => { p.pickupRange += factor; };
+  }
+  if (type === 'player' && stat === 'invincibleMs') {
+    return (p) => { p.invincibleMs += factor; };
+  }
   return () => {};
 }
 
@@ -82,6 +88,22 @@ function calcWeight(upgrade: UpgradeDef, player: Player, weapons: WeaponSystem):
       break;
     case 'bullet_speed':
       if (weapon.bulletSpeed < 400) weight += 0.3;
+      break;
+    case 'shield':
+      if (hpRatio < 0.6) weight += 0.8;
+      break;
+    case 'crit_chance':
+      if (weapon.bulletCount > 2) weight += 0.5;
+      weight += 0.2;
+      break;
+    case 'multi_cast':
+      weight += 0.4;
+      break;
+    case 'magnet':
+      weight += 0.2;
+      break;
+    case 'armor':
+      if (hpRatio < 0.5) weight += 0.6;
       break;
   }
 

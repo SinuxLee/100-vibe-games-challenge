@@ -1,2 +1,5 @@
 id,name,speed,hp,damage,xpReward,size,texture,color,waveInterval,desc
 brute,Brute,48,600,30,200,48,boss_brute,0x8e24aa,5,Standard boss every 5 waves
+necromancer,Necromancer,40,900,25,350,44,boss_necromancer,0x4a148c,5,Dark sorcerer with high HP
+dragon,Young Dragon,55,1400,45,500,56,boss_dragon,0xd32f2f,5,Fierce flying beast
+overlord,Overlord,35,2200,55,800,64,boss_overlord,0xf44336,5,Ultimate demon lord

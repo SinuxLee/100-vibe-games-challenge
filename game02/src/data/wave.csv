@@ -1,2 +1,6 @@
 id,duration,spawnIntervalBase,spawnIntervalMin,spawnCountBase,hpScaling,speedScaling,intervalReduction,enemies,bossId,desc
-wave_default,30000,1500,300,1,0.15,0.05,50,basic:3,brute,Standard wave config
+stage_1,30000,2000,600,2,0.10,0.02,50,basic:5;fast:1,brute,Waves 1-5 intro stage
+stage_2,30000,1800,500,3,0.12,0.03,50,basic:3;fast:2;tank:2;shooter:1,brute,Waves 6-10 tanks and archers
+stage_3,28000,1600,450,4,0.15,0.03,45,fast:2;tank:2;shooter:2;splitter:2;ghost:1,necromancer,Waves 11-15 diversified
+stage_4,25000,1400,400,5,0.18,0.04,40,shooter:2;splitter:2;ghost:2;charger:2;swarm:3,dragon,Waves 16-20 intense
+stage_5,22000,1200,350,6,0.22,0.05,35,ghost:2;charger:3;swarm:4;tank:1;splitter:2,overlord,Waves 21+ endgame

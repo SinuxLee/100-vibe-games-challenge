@@ -13,6 +13,7 @@ export class HUDScene extends Phaser.Scene {
   private timerText!: Phaser.GameObjects.Text;
   private levelText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
+  private stageText!: Phaser.GameObjects.Text;
   private muteBtn!: Phaser.GameObjects.Text;
   private fpsText!: Phaser.GameObjects.Text;
   private pauseOverlay?: Phaser.GameObjects.Container;
@@ -49,9 +50,22 @@ export class HUDScene extends Phaser.Scene {
     this.killsText = this.add.text(20, topY + 68, t('kills', { n: 0 }), textStyle);
     this.timerText = this.add.text(GAME_WIDTH - 20, topY + 68, '00:00', textStyle).setOrigin(1, 0);
 
+    this.stageText = this.add.text(GAME_WIDTH / 2, topY + 40, t('stage', { n: 1 }), {
+      fontSize: '18px',
+      fontFamily: 'monospace',
+      color: '#ffd700',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5, 0);
+
     this.registry.events.on('changedata', this.onRegistryChange, this);
+
+    const gameScene = this.scene.get('GameScene');
+    gameScene.events.on('stageChanged', this.onStageChanged, this);
+
     this.events.on('shutdown', () => {
       this.registry.events.off('changedata', this.onRegistryChange, this);
+      gameScene.events.off('stageChanged', this.onStageChanged, this);
     });
 
     this.muteBtn = this.add.text(GAME_WIDTH - 20, topY + 96, SoundManager.isMuted() ? t('muted') : t('sound'), {
@@ -98,6 +112,49 @@ export class HUDScene extends Phaser.Scene {
     this.fpsText.setText(`FPS:${fps}  DC:${drawCalls}`);
   }
 
+  private onStageChanged(stage: number): void {
+    this.stageText.setText(t('stage', { n: stage }));
+    this.showStageBanner(stage);
+  }
+
+  private showStageBanner(stage: number): void {
+    const { width, height } = this.scale;
+    const stageName = t(`stage_${stage}_name`);
+    const bannerText = t('stage_enter', { n: stage, name: stageName });
+
+    const bg = this.add.rectangle(width / 2, height * 0.4, width, 80, 0x000000, 0.75);
+    bg.setAlpha(0);
+
+    const txt = this.add.text(width / 2, height * 0.4, bannerText, {
+      fontSize: '28px',
+      fontFamily: 'monospace',
+      color: '#ffd700',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setAlpha(0);
+
+    this.tweens.add({
+      targets: [bg, txt],
+      alpha: 1,
+      duration: 400,
+      ease: 'Quad.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: [bg, txt],
+          alpha: 0,
+          duration: 600,
+          delay: 1800,
+          ease: 'Quad.easeIn',
+          onComplete: () => {
+            bg.destroy();
+            txt.destroy();
+          },
+        });
+      },
+    });
+  }
+
   private togglePause(): void {
     const gameScene = this.scene.get('GameScene') as any;
     if (!gameScene || !gameScene.scene.isActive()) return;
@@ -114,8 +171,8 @@ export class HUDScene extends Phaser.Scene {
       gameScene.physics.pause();
 
       const { width, height } = this.scale;
-      const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
-      const txt = this.add.text(width / 2, height / 2, t('paused'), {
+      const bgRect = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
+      const pausedTxt = this.add.text(width / 2, height / 2, t('paused'), {
         fontSize: '48px',
         fontFamily: 'monospace',
         color: '#ffffff',
@@ -126,7 +183,7 @@ export class HUDScene extends Phaser.Scene {
         fontFamily: 'monospace',
         color: '#90a4ae',
       }).setOrigin(0.5);
-      this.pauseOverlay = this.add.container(0, 0, [bg, txt, hint]);
+      this.pauseOverlay = this.add.container(0, 0, [bgRect, pausedTxt, hint]);
     }
   }
 

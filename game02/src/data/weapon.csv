@@ -2,3 +2,6 @@ id,name,damage,fireRate,bulletSpeed,bulletCount,pierce,bulletSize,bulletTexture,
 basic_gun,Basic Gun,15,600,450,1,1,6,bullet,Standard auto-aim gun
 shotgun,Shotgun,10,1000,350,5,1,5,bullet,Wide spread burst
 sniper,Sniper,50,1500,800,1,3,4,bullet,Long range piercing
+magic_bolt,Magic Bolt,20,500,380,2,2,7,bullet,Twin arcane projectiles
+crossbow,Crossbow,12,350,500,1,1,5,bullet,Rapid-fire precision
+flame_cannon,Flame Cannon,35,1200,300,3,2,8,bullet,Heavy area damage

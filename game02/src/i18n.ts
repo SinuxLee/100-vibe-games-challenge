@@ -26,6 +26,25 @@ const zh: Dict = {
   continue_game: '继续游戏',
   lang_toggle: '中文 / EN',
 
+  // Character select
+  select_char: '选择角色',
+  char_warrior: '战士',
+  char_ranger: '游侠',
+  char_mage: '法师',
+  char_warrior_desc: '均衡全能，血量充足',
+  char_ranger_desc: '快速灵巧，连弩急射',
+  char_mage_desc: '奥术法师，双弹穿透',
+  char_hp: '生命: {n}',
+  char_speed: '速度: {n}',
+  char_weapon: '武器: {n}',
+  weapon_basic_gun: '基础手枪',
+  weapon_crossbow: '连弩',
+  weapon_magic_bolt: '魔法弹',
+  weapon_shotgun: '霰弹枪',
+  weapon_sniper: '狙击枪',
+  weapon_flame_cannon: '火炮',
+  back: '返回',
+
   // HUD
   lv: '等级 {n}',
   wave: '波次 {n}',
@@ -34,6 +53,15 @@ const zh: Dict = {
   sound: '音效',
   paused: '暂停',
   pause_hint: '按 ESC 继续',
+
+  // Stage
+  stage: '第{n}章',
+  stage_1_name: '初始之地',
+  stage_2_name: '危险升级',
+  stage_3_name: '深入敌境',
+  stage_4_name: '末日前线',
+  stage_5_name: '终极试炼',
+  stage_enter: '— 第{n}章: {name} —',
 
   // Tutorial
   tut_move_title: '移动',
@@ -62,6 +90,11 @@ const zh: Dict = {
   upg_fire_rate_up: '急速射击',
   upg_speed_up: '疾风步',
   upg_max_hp: '生命力',
+  upg_shield: '钢铁意志',
+  upg_crit_chance: '致命瞄准',
+  upg_multi_cast: '奥术爆发',
+  upg_magnet: '磁力光环',
+  upg_armor: '铁皮肤',
 
   // Upgrade descriptions
   upg_pierce_desc: '每颗子弹额外穿透 +1 个敌人',
@@ -71,6 +104,11 @@ const zh: Dict = {
   upg_fire_rate_up_desc: '射击冷却 -15%',
   upg_speed_up_desc: '移动速度 +12%',
   upg_max_hp_desc: '最大生命值 +25 并回复',
+  upg_shield_desc: '最大生命值 +30（战士专属）',
+  upg_crit_chance_desc: '子弹伤害 +30%（游侠专属）',
+  upg_multi_cast_desc: '每次射击 +1 颗子弹（法师专属）',
+  upg_magnet_desc: '拾取范围 +20',
+  upg_armor_desc: '无敌时间 +200毫秒',
 
   // Game Over
   game_over: '游戏结束',
@@ -94,6 +132,25 @@ const en: Dict = {
   continue_game: 'CONTINUE',
   lang_toggle: '中文 / EN',
 
+  // Character select
+  select_char: 'SELECT CHARACTER',
+  char_warrior: 'Warrior',
+  char_ranger: 'Ranger',
+  char_mage: 'Mage',
+  char_warrior_desc: 'Balanced all-rounder with high HP',
+  char_ranger_desc: 'Fast scout with rapid-fire crossbow',
+  char_mage_desc: 'Arcane caster with twin bolts',
+  char_hp: 'HP: {n}',
+  char_speed: 'SPD: {n}',
+  char_weapon: 'Weapon: {n}',
+  weapon_basic_gun: 'Pistol',
+  weapon_crossbow: 'Crossbow',
+  weapon_magic_bolt: 'Magic Bolt',
+  weapon_shotgun: 'Shotgun',
+  weapon_sniper: 'Sniper',
+  weapon_flame_cannon: 'Flame Cannon',
+  back: 'BACK',
+
   // HUD
   lv: 'Lv.{n}',
   wave: 'Wave {n}',
@@ -102,6 +159,15 @@ const en: Dict = {
   sound: 'SOUND',
   paused: 'PAUSED',
   pause_hint: 'Press ESC to resume',
+
+  // Stage
+  stage: 'Stage {n}',
+  stage_1_name: 'The Beginning',
+  stage_2_name: 'Rising Danger',
+  stage_3_name: 'Deep Enemy Lines',
+  stage_4_name: 'Doomsday Front',
+  stage_5_name: 'Ultimate Trial',
+  stage_enter: '— Stage {n}: {name} —',
 
   // Tutorial
   tut_move_title: 'Move',
@@ -130,6 +196,11 @@ const en: Dict = {
   upg_fire_rate_up: 'Rapid Fire',
   upg_speed_up: 'Swift Feet',
   upg_max_hp: 'Vitality',
+  upg_shield: 'Iron Will',
+  upg_crit_chance: 'Deadly Aim',
+  upg_multi_cast: 'Arcane Burst',
+  upg_magnet: 'Magnetic Aura',
+  upg_armor: 'Tough Skin',
 
   // Upgrade descriptions
   upg_pierce_desc: '+1 enemy pierced per bullet',
@@ -139,6 +210,11 @@ const en: Dict = {
   upg_fire_rate_up_desc: '-15% fire cooldown',
   upg_speed_up_desc: '+12% movement speed',
   upg_max_hp_desc: '+25 max HP and heal',
+  upg_shield_desc: '+30 max HP (Warrior only)',
+  upg_crit_chance_desc: '+30% bullet damage (Ranger only)',
+  upg_multi_cast_desc: '+1 bullet per shot (Mage only)',
+  upg_magnet_desc: '+20 pickup range',
+  upg_armor_desc: '+200ms invincibility',
 
   // Game Over
   game_over: 'GAME OVER',

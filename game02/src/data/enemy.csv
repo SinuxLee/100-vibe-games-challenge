@@ -1,4 +1,9 @@
 id,name,speed,hp,damage,xpReward,size,texture,color,desc
-basic,Basic Zombie,80,30,10,10,16,enemy_basic,0xe53935,Standard chaser
-fast,Speed Demon,140,15,8,12,12,enemy_fast,0xff9800,Fast but fragile
-tank,Tank,50,80,20,25,24,enemy_tank,0x795548,Slow and tough
+basic,Slime,80,30,10,10,16,enemy_basic,0xe53935,Standard chaser
+fast,Bat,140,15,8,12,12,enemy_fast,0xff9800,Fast but fragile
+tank,Golem,50,80,20,25,24,enemy_tank,0x795548,Slow and tough
+shooter,Skeleton Archer,70,25,14,15,18,enemy_shooter,0xcccc44,High damage mid-range
+splitter,Fission Bug,90,45,8,18,20,enemy_splitter,0x44cccc,Splits on death for bonus XP
+ghost,Wraith,110,20,22,25,16,enemy_ghost,0xaa88ff,High damage glass cannon
+charger,Charger Beast,200,35,28,22,22,enemy_charger,0xff6600,Extremely fast and deadly
+swarm,Swarmling,130,10,5,5,10,enemy_swarm,0x88ff44,Tiny but comes in huge numbers

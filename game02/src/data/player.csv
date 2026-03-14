@@ -1,4 +1,4 @@
 id,name,speed,maxHp,pickupRange,invincibleMs,size,texture,startWeapon,xpBase,xpScaling,desc
-warrior,Warrior,200,100,120,500,20,player_warrior,basic_gun,30,1.35,Balanced all-rounder
-ranger,Ranger,240,70,150,400,18,player_ranger,basic_gun,25,1.30,Fast and agile scout
-mage,Mage,170,80,160,600,20,player_mage,basic_gun,35,1.40,High damage caster
+warrior,Warrior,200,120,120,500,20,player_warrior,basic_gun,30,1.35,Balanced all-rounder with high HP
+ranger,Ranger,250,70,150,400,18,player_ranger,crossbow,25,1.30,Fast scout with rapid-fire crossbow
+mage,Mage,170,85,160,600,20,player_mage,magic_bolt,35,1.40,Arcane caster with twin bolts
