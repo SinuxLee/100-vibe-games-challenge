@@ -54,6 +54,32 @@
       text-align: center;
       border-bottom: 1px solid var(--border);
     }
+    .github-star {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .github-star:hover {
+      border-color: var(--accent);
+      background: #22223a;
+      text-decoration: none;
+    }
+    .github-star svg {
+      width: 18px;
+      height: 18px;
+      fill: #e3b341;
+      flex-shrink: 0;
+    }
     h1 {
       font-size: clamp(1.5rem, 4vw, 2.25rem);
       font-weight: 700;
@@ -142,6 +168,10 @@
   <header>
     <h1 data-zh="百款游戏挑战" data-en="100 Games Challenge">百款游戏挑战</h1>
     <p class="subtitle" data-zh="Vibe Coding 开发的网页小游戏合集 · 点击卡片进入游戏" data-en="A collection of web games built with vibe coding · Click a card to play">Vibe Coding 开发的网页小游戏合集 · 点击卡片进入游戏</p>
+    <a class="github-star" href="https://github.com/SinuxLee/100-vibe-games-challenge" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+      <span data-zh="Star on GitHub" data-en="Star on GitHub">Star on GitHub</span>
+    </a>
   </header>
 
   <main>
