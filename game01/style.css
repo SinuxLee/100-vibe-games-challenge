@@ -1,0 +1,309 @@
+/* ===== CSS 变量 ===== */
+:root {
+  --bg: #f5e6c8;
+  --grass: #7cb87a;
+  --hole-color: #5c3d2e;
+  --mole-body: #a0724a;
+  --mole-ear-inner: #e8a0a0;
+  --mole-eye: #2c1a0e;
+  --mole-nose: #c45e5e;
+  --btn-color: #e8743b;
+  --btn-hover: #d4622a;
+  --text-dark: #3a2a1a;
+  --white: #fff;
+  --subtitle-color: #6b5040;
+  --label-color: #7a5c40;
+}
+
+/* ===== 全局重置 ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ===== 屏幕切换 ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ===== 开始页 ===== */
+.game-title {
+  font-size: 3.5rem;
+  color: var(--text-dark);
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.1em;
+}
+
+.subtitle {
+  color: var(--subtitle-color);
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.btn-primary {
+  padding: 0.9rem 2.8rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--white);
+  background: var(--btn-color);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--btn-hover);
+  transition: transform 80ms, box-shadow 80ms;
+  letter-spacing: 0.05em;
+}
+
+.btn-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--btn-hover);
+}
+
+/* ===== 状态栏 ===== */
+.status-bar {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 1.8rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.55);
+  border-radius: 12px;
+  padding: 0.5rem 1.6rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--label-color);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-dark);
+  line-height: 1.2;
+}
+
+/* ===== 地鼠格 ===== */
+.mole-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  padding: 1.8rem;
+  background: var(--grass);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 2px 6px rgba(255,255,255,0.2);
+}
+
+/* ===== 洞 ===== */
+.hole {
+  position: relative;
+  width: 110px;
+  height: 80px;
+  background: var(--hole-color);
+  border-radius: 50%;
+  overflow: hidden;            /* 裁切未出现的地鼠 */
+  box-shadow: inset 0 8px 16px rgba(0,0,0,0.5),
+              0 4px 8px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+/* ===== 地鼠容器（默认藏于洞下方）===== */
+.mole {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%); /* 藏起来 */
+  width: 70px;
+  height: 75px;
+  transition: transform 150ms ease;
+}
+
+/* 地鼠出现状态 */
+.hole.active .mole {
+  transform: translateX(-50%) translateY(10%);
+}
+
+/* ===== 耳朵 ===== */
+.mole-ear {
+  position: absolute;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  background: var(--mole-body);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.mole-ear.left  { left: 4px; }
+.mole-ear.right { right: 4px; }
+
+/* 耳朵内圈 */
+.mole-ear::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: var(--mole-ear-inner);
+  border-radius: 50%;
+}
+
+/* ===== 脸部 ===== */
+/* position: absolute 同时满足两个需求：
+   1) 相对 .mole 进行绝对定位
+   2) 作为 .mole-eye/.mole-nose 的定位包含块（非 static 元素均可）*/
+.mole-face {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 62px;
+  height: 58px;
+  background: var(--mole-body);
+  border-radius: 50% 50% 45% 45%;
+  z-index: 2;
+}
+
+/* 脸部高光 */
+.mole-face::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 18px;
+  height: 10px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+/* ===== 眼睛 ===== */
+.mole-eye {
+  position: absolute;
+  top: 14px;
+  width: 10px;
+  height: 11px;
+  background: var(--mole-eye);
+  border-radius: 50%;
+}
+
+.mole-eye.left  { left: 12px; }
+.mole-eye.right { right: 12px; }
+
+/* 眼睛反光 */
+.mole-eye::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+}
+
+/* ===== 鼻子 ===== */
+.mole-nose {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 10px;
+  background: var(--mole-nose);
+  border-radius: 50%;
+}
+
+/* ===== 命中反馈浮动文字 ===== */
+@keyframes float-up {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
+}
+
+.hit-feedback {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  pointer-events: none;
+  z-index: 10;
+  animation: float-up 600ms ease forwards;
+}
+
+/* ===== 结束弹窗 ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 2.5rem 3rem;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  min-width: 280px;
+}
+
+.modal-box h2 {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.final-score-label {
+  color: var(--label-color);
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.final-score {
+  font-size: 4rem;
+  font-weight: bold;
+  color: var(--btn-color);
+  line-height: 1.1;
+  margin-bottom: 1.8rem;
+}
