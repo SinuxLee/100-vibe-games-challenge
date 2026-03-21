@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { BaseObstacle, LogicalRect } from './BaseObstacle';
 import {
   ObstacleType, GAME_WIDTH, OBSTACLE_HEIGHT,
-  COLOR_LASER_RED,
+  COLOR_LASER_RED, COLOR_HIGHLIGHT_WHITE,
   toPixelX, toPixelW, toPixelH,
 } from '../../constants';
 
@@ -27,21 +27,48 @@ export class DualGapWall extends BaseObstacle {
   createVisuals(): void {
     this.bars = [];
     const h = toPixelH(OBSTACLE_HEIGHT);
+    const glowH = h * 1.6;
+    const glowExpand = toPixelW(1.5);
 
     const gaps = this.getSortedGaps();
     const segments = this.computeSegments(gaps);
 
     for (const seg of segments) {
       if (seg.w > 0.5) {
-        const bar = this.scene.add.rectangle(
-          toPixelX(seg.x + seg.w / 2), 0,
-          toPixelW(seg.w), h,
-          COLOR_LASER_RED, 0.85,
-        );
+        const w = toPixelW(seg.w);
+        const px = toPixelX(seg.x + seg.w / 2);
+
+        const glow = this.scene.add.rectangle(px, 0, w + glowExpand, glowH, COLOR_LASER_RED, 0.15);
+        glow.setBlendMode(Phaser.BlendModes.ADD);
+        this.add(glow);
+
+        const bar = this.scene.add.rectangle(px, 0, w, h, COLOR_LASER_RED, 0.9);
+        bar.setBlendMode(Phaser.BlendModes.ADD);
         this.add(bar);
         this.bars.push(bar);
       }
     }
+
+    const edgeW = toPixelW(0.4);
+    const gapEdges = this.computeGapEdges(gaps);
+    for (const ex of gapEdges) {
+      const edge = this.scene.add.rectangle(
+        toPixelX(ex), 0, edgeW, h * 1.3, COLOR_HIGHLIGHT_WHITE, 0.7
+      );
+      edge.setBlendMode(Phaser.BlendModes.ADD);
+      this.add(edge);
+    }
+  }
+
+  private computeGapEdges(gaps: Array<{ center: number; width: number }>): number[] {
+    const edges: number[] = [];
+    for (const gap of gaps) {
+      const left = gap.center - gap.width / 2;
+      const right = gap.center + gap.width / 2;
+      if (left > 0.5) edges.push(left);
+      if (right < GAME_WIDTH - 0.5) edges.push(right);
+    }
+    return edges;
   }
 
   private getSortedGaps(): Array<{ center: number; width: number }> {

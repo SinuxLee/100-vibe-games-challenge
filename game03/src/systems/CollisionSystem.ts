@@ -1,5 +1,6 @@
 import { Player } from '../entities/Player';
 import { BaseObstacle, LogicalRect } from '../entities/obstacles/BaseObstacle';
+import { BaseCollectible } from '../entities/collectibles/BaseCollectible';
 import { NEAR_MISS_DISTANCE, PLAYER_WIDTH, PLAYER_HEIGHT } from '../constants';
 
 export class CollisionSystem {
@@ -34,6 +35,19 @@ export class CollisionSystem {
     }
 
     return minEdgeDistance < NEAR_MISS_DISTANCE;
+  }
+
+  checkCollectible(player: Player, collectibles: BaseCollectible[]): BaseCollectible | null {
+    const pr = player.getCollisionRect();
+    for (const c of collectibles) {
+      if (c.collected) continue;
+      const cr = c.getCollisionRect();
+      if (this.rectsOverlap(pr, cr)) {
+        c.collected = true;
+        return c;
+      }
+    }
+    return null;
   }
 
   private rectsOverlap(

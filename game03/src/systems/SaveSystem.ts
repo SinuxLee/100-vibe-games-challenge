@@ -3,6 +3,7 @@ interface SaveData {
   longestTime: number;
   soundEnabled: boolean;
   vibrateEnabled: boolean;
+  tutorialCompleted: boolean;
 }
 
 const STORAGE_KEY = 'neon_dodge_save';
@@ -12,6 +13,7 @@ const DEFAULTS: SaveData = {
   longestTime: 0,
   soundEnabled: true,
   vibrateEnabled: true,
+  tutorialCompleted: false,
 };
 
 export class SaveSystem {
@@ -57,5 +59,15 @@ export class SaveSystem {
     data.vibrateEnabled = !data.vibrateEnabled;
     SaveSystem.save(data);
     return data.vibrateEnabled;
+  }
+
+  static isTutorialCompleted(): boolean {
+    return SaveSystem.load().tutorialCompleted;
+  }
+
+  static completeTutorial(): void {
+    const data = SaveSystem.load();
+    data.tutorialCompleted = true;
+    SaveSystem.save(data);
   }
 }

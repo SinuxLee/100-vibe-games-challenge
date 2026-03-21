@@ -10,8 +10,8 @@ import {
 
 describe('Difficulty formulas', () => {
   describe('scrollSpeed(t)', () => {
-    it('returns 8 at t=0', () => {
-      expect(scrollSpeed(0)).toBe(8);
+    it('returns 15 at t=0', () => {
+      expect(scrollSpeed(0)).toBe(15);
     });
 
     it('increases over time', () => {
@@ -19,34 +19,34 @@ describe('Difficulty formulas', () => {
       expect(scrollSpeed(30)).toBeGreaterThan(scrollSpeed(10));
     });
 
-    it('caps at 22', () => {
-      expect(scrollSpeed(200)).toBe(22);
-      expect(scrollSpeed(1000)).toBe(22);
+    it('caps at 65', () => {
+      expect(scrollSpeed(200)).toBe(65);
+      expect(scrollSpeed(1000)).toBe(65);
     });
 
-    it('matches formula: min(22, 8 + 0.12t + 0.002t²)', () => {
+    it('matches formula: min(65, 15 + 0.3t + 0.003t²)', () => {
       const t = 25;
-      const expected = Math.min(22, 8 + 0.12 * t + 0.002 * t * t);
+      const expected = Math.min(65, 15 + 0.3 * t + 0.003 * t * t);
       expect(scrollSpeed(t)).toBeCloseTo(expected, 10);
     });
   });
 
   describe('spawnInterval(t)', () => {
-    it('returns 1.6 at t=0', () => {
-      expect(spawnInterval(0)).toBe(1.6);
+    it('returns 3.0 at t=0', () => {
+      expect(spawnInterval(0)).toBe(3.0);
     });
 
     it('decreases over time', () => {
       expect(spawnInterval(20)).toBeLessThan(spawnInterval(0));
     });
 
-    it('floors at 0.45', () => {
-      expect(spawnInterval(500)).toBe(0.45);
+    it('floors at 0.6', () => {
+      expect(spawnInterval(500)).toBe(0.6);
     });
 
-    it('matches formula: max(0.45, 1.6 - 0.008t)', () => {
+    it('matches formula: max(0.6, 3.0 - 0.015t)', () => {
       const t = 50;
-      const expected = Math.max(0.45, 1.6 - 0.008 * t);
+      const expected = Math.max(0.6, 3.0 - 0.015 * t);
       expect(spawnInterval(t)).toBeCloseTo(expected, 10);
     });
   });
@@ -92,22 +92,22 @@ describe('Difficulty formulas', () => {
   });
 
   describe('shrinkRate(t)', () => {
-    it('starts at 1.5 at t=0', () => {
-      expect(shrinkRate(0)).toBe(1.5);
+    it('starts at 4 at t=0', () => {
+      expect(shrinkRate(0)).toBe(4);
     });
 
-    it('caps at 6', () => {
-      expect(shrinkRate(1000)).toBe(6);
+    it('caps at 20', () => {
+      expect(shrinkRate(1000)).toBe(20);
     });
   });
 
   describe('pulseInterval(t)', () => {
-    it('starts at 0.8 at t=0', () => {
-      expect(pulseInterval(0)).toBe(0.8);
+    it('starts at 0.6 at t=0', () => {
+      expect(pulseInterval(0)).toBe(0.6);
     });
 
-    it('floors at 0.4', () => {
-      expect(pulseInterval(1000)).toBe(0.4);
+    it('floors at 0.35', () => {
+      expect(pulseInterval(1000)).toBe(0.35);
     });
   });
 });

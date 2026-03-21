@@ -8,18 +8,20 @@ import { PulseGrid } from '../entities/obstacles/PulseGrid';
 import { DifficultyDirector } from './DifficultyDirector';
 import {
   ObstacleType, OBSTACLE_SPAWN_Y, GAME_WIDTH,
-  PLAYER_MAX_SPEED, PLAYER_WIDTH,
+  PLAYER_MAX_SPEED, PLAYER_WIDTH, PLAYER_START_Y,
   MAX_CONSECUTIVE_SAME, REACTION_BUFFER_MIN, REACTION_BUFFER_MAX,
+  INITIAL_SPAWN_DELAY, MIN_WALL_WIDTH,
 } from '../constants';
 
 export class ObstacleManager {
   private scene: Phaser.Scene;
   private director: DifficultyDirector;
   private obstacles: BaseObstacle[] = [];
-  private spawnTimer = 0;
+  private spawnTimer = INITIAL_SPAWN_DELAY;
   private lastGapCenterX: number;
   private consecutiveTypeCount = 0;
   private lastType: ObstacleType | null = null;
+  private onSpawnCallback: ((gapCenterX: number, gapWidth: number) => void) | null = null;
 
   constructor(scene: Phaser.Scene, director: DifficultyDirector) {
     this.scene = scene;
@@ -71,7 +73,7 @@ export class ObstacleManager {
         const gap2Center = this.computeSecondGapCenter(gapCenter, gw);
         obstacle = new DualGapWall(
           this.scene, OBSTACLE_SPAWN_Y,
-          gapCenter, gw, gap2Center, gw * 0.8,
+          gapCenter, gw, gap2Center, gw * 0.85,
         );
         break;
       }
@@ -98,6 +100,17 @@ export class ObstacleManager {
 
     this.obstacles.push(obstacle);
     this.lastGapCenterX = gapCenter;
+    if (type === ObstacleType.DUAL_GAP) {
+      const gap2Center = this.computeSecondGapCenter(gapCenter, gw);
+      this.onSpawnCallback?.(gapCenter, gw);
+      this.onSpawnCallback?.(gap2Center, gw * 0.85);
+    } else if (type !== ObstacleType.PULSE_GRID) {
+      this.onSpawnCallback?.(gapCenter, gw);
+    }
+  }
+
+  setOnSpawnCallback(cb: (gapCenterX: number, gapWidth: number) => void): void {
+    this.onSpawnCallback = cb;
   }
 
   private pickType(available: ObstacleType[]): ObstacleType {
@@ -142,10 +155,10 @@ export class ObstacleManager {
 
   private computeFairGapCenter(gw: number): number {
     const halfGap = gw / 2;
-    const minCenter = halfGap;
-    const maxCenter = GAME_WIDTH - halfGap;
+    const minCenter = MIN_WALL_WIDTH + halfGap;
+    const maxCenter = GAME_WIDTH - MIN_WALL_WIDTH - halfGap;
 
-    const travelTime = (OBSTACLE_SPAWN_Y - 20) / this.director.getScrollSpeed();
+    const travelTime = (OBSTACLE_SPAWN_Y - PLAYER_START_Y) / this.director.getScrollSpeed();
     const reactionBuffer = REACTION_BUFFER_MIN + Math.random() * (REACTION_BUFFER_MAX - REACTION_BUFFER_MIN);
     const maxReachable = PLAYER_MAX_SPEED * Math.max(0, travelTime - reactionBuffer);
 
@@ -159,12 +172,12 @@ export class ObstacleManager {
   }
 
   private computeSecondGapCenter(firstGapCenter: number, gw: number): number {
-    const gap2W = gw * 0.8;
+    const gap2W = gw * 0.85;
     const halfGap2 = gap2W / 2;
     const minSeparation = gw / 2 + gap2W / 2 + PLAYER_WIDTH;
 
-    const minCenter = halfGap2;
-    const maxCenter = GAME_WIDTH - halfGap2;
+    const minCenter = MIN_WALL_WIDTH + halfGap2;
+    const maxCenter = GAME_WIDTH - MIN_WALL_WIDTH - halfGap2;
 
     let attempts = 0;
     let gap2Center: number;
@@ -192,7 +205,7 @@ export class ObstacleManager {
       obs.destroySelf();
     }
     this.obstacles = [];
-    this.spawnTimer = 0;
+    this.spawnTimer = INITIAL_SPAWN_DELAY;
     this.lastGapCenterX = GAME_WIDTH / 2;
     this.consecutiveTypeCount = 0;
     this.lastType = null;

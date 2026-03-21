@@ -12,6 +12,10 @@ interface GameOverData {
   score: number;
   time: number;
   isNewBest: boolean;
+  levelReached?: number;
+  totalLevels?: number;
+  maxCombo?: number;
+  allComplete?: boolean;
 }
 
 export class GameOverScene extends Phaser.Scene {
@@ -95,8 +99,66 @@ export class GameOverScene extends Phaser.Scene {
       color: CSS_NEON_PURPLE,
     }).setOrigin(0.5);
 
+    let infoY = 0.61;
+
+    if (data.levelReached && data.totalLevels) {
+      this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * infoY, `LEVEL ${data.levelReached} / ${data.totalLevels}`, {
+        fontFamily: 'monospace',
+        fontSize: '24px',
+        color: CSS_HIGHLIGHT_WHITE,
+      }).setOrigin(0.5);
+      infoY += 0.05;
+    }
+
+    if (data.maxCombo && data.maxCombo > 1) {
+      this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * infoY, `MAX COMBO: ${data.maxCombo}`, {
+        fontFamily: 'monospace',
+        fontSize: '22px',
+        color: CSS_NEON_PURPLE,
+      }).setOrigin(0.5);
+      infoY += 0.05;
+    }
+
+    if (data.allComplete) {
+      const completeText = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * infoY, 'ALL LEVELS COMPLETE!', {
+        fontFamily: 'monospace',
+        fontSize: '32px',
+        color: '#FFD700',
+        stroke: '#FFD700',
+        strokeThickness: 1,
+      }).setOrigin(0.5).setScale(0);
+
+      this.tweens.add({
+        targets: completeText,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 500,
+        ease: 'Back.easeOut',
+        delay: scoreDuration,
+      });
+      infoY += 0.06;
+    } else if (data.levelReached && data.totalLevels && data.totalLevels - data.levelReached <= 2 && data.totalLevels - data.levelReached > 0) {
+      const remaining = data.totalLevels - data.levelReached;
+      const almostMsg = remaining === 1 ? 'ONE LEVEL AWAY!' : 'TWO LEVELS AWAY!';
+      const almostText = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * infoY, almostMsg, {
+        fontFamily: 'monospace',
+        fontSize: '26px',
+        color: CSS_LASER_RED,
+      }).setOrigin(0.5).setAlpha(0);
+
+      this.tweens.add({
+        targets: almostText,
+        alpha: 1,
+        duration: 400,
+        delay: scoreDuration + 200,
+        yoyo: true,
+        hold: 1500,
+      });
+      infoY += 0.06;
+    }
+
     if (data.isNewBest) {
-      const newBestText = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.63, 'NEW BEST!', {
+      const newBestText = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * infoY, 'NEW BEST!', {
         fontFamily: 'monospace',
         fontSize: '40px',
         color: '#FFD700',
@@ -149,7 +211,7 @@ export class GameOverScene extends Phaser.Scene {
       });
     }
 
-    const restartBtn = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.75, 'RESTART', {
+    const restartBtn = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.78, 'RESTART', {
       fontFamily: 'monospace',
       fontSize: '36px',
       color: CSS_ELECTRIC_BLUE,
@@ -163,7 +225,7 @@ export class GameOverScene extends Phaser.Scene {
       });
     });
 
-    const menuBtn = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.83, 'MENU', {
+    const menuBtn = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.86, 'MENU', {
       fontFamily: 'monospace',
       fontSize: '36px',
       color: CSS_NEON_PURPLE,

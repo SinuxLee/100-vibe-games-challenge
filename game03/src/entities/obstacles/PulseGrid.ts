@@ -11,6 +11,7 @@ const PULSE_GRID_HEIGHT_MULT = 3;
 
 export class PulseGrid extends BaseObstacle {
   private columns!: Phaser.GameObjects.Rectangle[];
+  private glowColumns!: Phaser.GameObjects.Rectangle[];
   private pulseIntvl: number;
   private aliveTime = 0;
   constructor(
@@ -24,17 +25,24 @@ export class PulseGrid extends BaseObstacle {
 
   createVisuals(): void {
     this.columns = [];
+    this.glowColumns = [];
     const colWidth = GAME_WIDTH / COLUMN_COUNT;
     const h = toPixelH(OBSTACLE_HEIGHT * PULSE_GRID_HEIGHT_MULT);
+    const glowH = h * 1.3;
 
     for (let i = 0; i < COLUMN_COUNT; i++) {
       const cx = colWidth * (i + 0.5);
       const color = i % 2 === 0 ? COLOR_LASER_RED : COLOR_NEON_PURPLE;
-      const col = this.scene.add.rectangle(
-        toPixelX(cx), 0,
-        toPixelW(colWidth) - 2, h,
-        color, 0.8,
-      );
+      const px = toPixelX(cx);
+      const w = toPixelW(colWidth) - 2;
+
+      const glow = this.scene.add.rectangle(px, 0, w + 4, glowH, color, 0.12);
+      glow.setBlendMode(Phaser.BlendModes.ADD);
+      this.add(glow);
+      this.glowColumns.push(glow);
+
+      const col = this.scene.add.rectangle(px, 0, w, h, color, 0.85);
+      col.setBlendMode(Phaser.BlendModes.ADD);
       this.add(col);
       this.columns.push(col);
     }
@@ -54,11 +62,22 @@ export class PulseGrid extends BaseObstacle {
     const cyclePos = (this.aliveTime / this.pulseIntvl) % 2;
     const groupAActive = cyclePos < 1;
 
+    const WARNING_TIME = 0.4;
+    const timeInHalf = (cyclePos % 1) * this.pulseIntvl;
+    const timeToFlip = this.pulseIntvl - timeInHalf;
+    const isWarning = timeToFlip < WARNING_TIME;
+    const warningFlicker = isWarning
+      ? 0.3 + 0.7 * Math.abs(Math.sin(timeToFlip * 20))
+      : 1.0;
+
     for (let i = 0; i < this.columns.length; i++) {
       const isGroupA = i % 2 === 0;
       const active = isGroupA ? groupAActive : !groupAActive;
-      this.columns[i].setAlpha(active ? 0.85 : 0.1);
+      this.columns[i].setAlpha(active ? 0.85 * warningFlicker : 0.08);
       this.columns[i].setVisible(true);
+      if (this.glowColumns && this.glowColumns[i]) {
+        this.glowColumns[i].setAlpha(active ? 0.12 * warningFlicker : 0.02);
+      }
     }
   }
 

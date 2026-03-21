@@ -75,6 +75,9 @@ export class MockText {
   text = '';
   alpha = 1;
   depth = 0;
+  scaleX = 1;
+  scaleY = 1;
+  blendMode = 0;
 
   constructor(_scene?: any, x = 0, y = 0, text = '', _style?: any) {
     this.x = x;
@@ -88,6 +91,31 @@ export class MockText {
 
   setDepth(d: number): this {
     this.depth = d;
+    return this;
+  }
+
+  setScale(s: number): this {
+    this.scaleX = s;
+    this.scaleY = s;
+    return this;
+  }
+
+  setAlpha(a: number): this {
+    this.alpha = a;
+    return this;
+  }
+
+  setBlendMode(m: number): this {
+    this.blendMode = m;
+    return this;
+  }
+
+  setColor(_c: string): this {
+    return this;
+  }
+
+  setText(t: string): this {
+    this.text = t;
     return this;
   }
 
@@ -115,6 +143,14 @@ export class MockParticleEmitter {
 
   setFrequency(f: number): this {
     this.frequency = f;
+    return this;
+  }
+
+  setParticleSpeed(_min: number, _max: number): this {
+    return this;
+  }
+
+  setParticleLifespan(_lifespan: number): this {
     return this;
   }
 
@@ -163,8 +199,13 @@ export class MockBody {
 
 // --- Mock Camera ---
 export class MockCamera {
+  scrollX = 0;
+  scrollY = 0;
+  rotation = 0;
   shake(_duration?: number, _intensity?: number): void {}
   flash(_duration?: number, _r?: number, _g?: number, _b?: number, _force?: boolean): void {}
+  setScroll(x: number, y: number): void { this.scrollX = x; this.scrollY = y; }
+  setRotation(r: number): void { this.rotation = r; }
 }
 
 // --- Mock Scene ---
@@ -182,6 +223,27 @@ export function createMockScene(): any {
       }),
       particles: vi.fn((_x: number, _y: number, _key: string, _config?: any) => {
         return new MockParticleEmitter();
+      }),
+      graphics: vi.fn(() => {
+        return {
+          setDepth: vi.fn().mockReturnThis(),
+          setBlendMode: vi.fn().mockReturnThis(),
+          setAlpha: vi.fn().mockReturnThis(),
+          setRotation: vi.fn().mockReturnThis(),
+          clear: vi.fn().mockReturnThis(),
+          lineStyle: vi.fn().mockReturnThis(),
+          lineBetween: vi.fn().mockReturnThis(),
+          fillStyle: vi.fn().mockReturnThis(),
+          fillCircle: vi.fn().mockReturnThis(),
+          fillRect: vi.fn().mockReturnThis(),
+          beginPath: vi.fn().mockReturnThis(),
+          moveTo: vi.fn().mockReturnThis(),
+          lineTo: vi.fn().mockReturnThis(),
+          closePath: vi.fn().mockReturnThis(),
+          fillPath: vi.fn().mockReturnThis(),
+          strokePath: vi.fn().mockReturnThis(),
+          destroy: vi.fn(),
+        };
       }),
     },
     physics: {
@@ -207,9 +269,12 @@ export function createMockScene(): any {
     },
     time: {
       delayedCall: vi.fn((_delay: number, cb: Function) => {
-        // Execute immediately in tests
         cb();
       }),
+      addEvent: vi.fn((_config: any) => {
+        if (_config && _config.callback) _config.callback();
+      }),
+      timeScale: 1,
     },
     sound: {
       play: vi.fn(),
@@ -288,6 +353,10 @@ const PhaserMock = {
 
         setDepth(d: number): this {
           this.depth = d;
+          return this;
+        }
+
+        setAngle(_a: number): this {
           return this;
         }
 

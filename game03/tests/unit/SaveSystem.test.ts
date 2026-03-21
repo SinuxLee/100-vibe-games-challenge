@@ -110,4 +110,49 @@ describe('SaveSystem', () => {
       expect(result).toBe(true);
     });
   });
+
+  describe('tutorial', () => {
+    it('tutorial is not completed by default', () => {
+      expect(SaveSystem.isTutorialCompleted()).toBe(false);
+    });
+
+    it('completeTutorial marks tutorial as done', () => {
+      SaveSystem.completeTutorial();
+      expect(SaveSystem.isTutorialCompleted()).toBe(true);
+    });
+
+    it('tutorial completion persists across loads', () => {
+      SaveSystem.completeTutorial();
+      const data = SaveSystem.load();
+      expect(data.tutorialCompleted).toBe(true);
+    });
+
+    it('tutorial flag does not affect other save data', () => {
+      SaveSystem.updateBest(100, 30);
+      SaveSystem.completeTutorial();
+      const data = SaveSystem.load();
+      expect(data.bestScore).toBe(100);
+      expect(data.longestTime).toBe(30);
+      expect(data.tutorialCompleted).toBe(true);
+    });
+
+    it('loads tutorialCompleted from existing save', () => {
+      storage['neon_dodge_save'] = JSON.stringify({
+        bestScore: 0,
+        longestTime: 0,
+        soundEnabled: true,
+        vibrateEnabled: true,
+        tutorialCompleted: true,
+      });
+      expect(SaveSystem.isTutorialCompleted()).toBe(true);
+    });
+
+    it('defaults tutorialCompleted to false for old saves without it', () => {
+      storage['neon_dodge_save'] = JSON.stringify({
+        bestScore: 200,
+        longestTime: 45,
+      });
+      expect(SaveSystem.isTutorialCompleted()).toBe(false);
+    });
+  });
 });

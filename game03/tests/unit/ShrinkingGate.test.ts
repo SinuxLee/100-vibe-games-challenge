@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createMockScene } from './__mocks__/phaser';
 import { ShrinkingGate } from '../../src/entities/obstacles/ShrinkingGate';
-import { PLAYER_WIDTH, GAME_WIDTH, OBSTACLE_HEIGHT } from '../../src/constants';
+import { PLAYER_WIDTH, GAME_WIDTH, OBSTACLE_HEIGHT, SHRINKING_GATE_MIN_GAP_EXTRA } from '../../src/constants';
 
 describe('ShrinkingGate', () => {
   let scene: any;
@@ -30,12 +30,12 @@ describe('ShrinkingGate', () => {
       expect(gate.currentGapWidth).toBeCloseTo(30 - shrinkSpd * 2);
     });
 
-    it('never shrinks below PLAYER_WIDTH + 2', () => {
+    it('never shrinks below PLAYER_WIDTH + SHRINKING_GATE_MIN_GAP_EXTRA', () => {
       const gate = new ShrinkingGate(scene, 170, 50, 30, 10);
       for (let i = 0; i < 20; i++) {
         gate.updateMovement(1, 0);
       }
-      expect(gate.currentGapWidth).toBe(PLAYER_WIDTH + 2);
+      expect(gate.currentGapWidth).toBe(PLAYER_WIDTH + SHRINKING_GATE_MIN_GAP_EXTRA);
     });
 
     it('gap width stays at min after reaching it', () => {
@@ -44,7 +44,7 @@ describe('ShrinkingGate', () => {
       const widthAfterLong = gate.currentGapWidth;
       gate.updateMovement(5, 0);
       expect(gate.currentGapWidth).toBe(widthAfterLong);
-      expect(gate.currentGapWidth).toBe(PLAYER_WIDTH + 2);
+      expect(gate.currentGapWidth).toBe(PLAYER_WIDTH + SHRINKING_GATE_MIN_GAP_EXTRA);
     });
   });
 

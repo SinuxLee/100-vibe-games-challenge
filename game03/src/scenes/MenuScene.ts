@@ -133,9 +133,29 @@ export class MenuScene extends Phaser.Scene {
     const zone = this.add.zone(CANVAS_WIDTH / 2, btnY, 400, 120).setInteractive();
     zone.on('pointerdown', () => {
       AudioManager.playStart();
+      const targetScene = SaveSystem.isTutorialCompleted() ? 'GameScene' : 'TutorialScene';
       this.cameras.main.fade(300, 7, 11, 26, true, (_cam: unknown, progress: number) => {
         if (progress >= 1) {
-          this.scene.start('GameScene');
+          this.scene.start(targetScene);
+        }
+      });
+    });
+
+    this.drawTutorialButton();
+  }
+
+  private drawTutorialButton(): void {
+    const tutBtn = this.add.text(CANVAS_WIDTH / 2, CANVAS_HEIGHT * 0.78, 'TUTORIAL', {
+      fontFamily: 'monospace',
+      fontSize: '22px',
+      color: CSS_NEON_PURPLE,
+    }).setOrigin(0.5).setDepth(3).setAlpha(0.5).setInteractive();
+
+    tutBtn.on('pointerdown', () => {
+      AudioManager.playStart();
+      this.cameras.main.fade(300, 7, 11, 26, true, (_cam: unknown, progress: number) => {
+        if (progress >= 1) {
+          this.scene.start('TutorialScene');
         }
       });
     });

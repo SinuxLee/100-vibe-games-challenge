@@ -1,0 +1,14 @@
+level,scrollSpeed,spawnInterval,gapWidth,driftSpeed,driftRange,shrinkRate,pulseInterval,obstacleTypes,duration,label
+1,15,3.0,20,1.0,1,1,0,A,45,START
+2,17,2.8,20,1.2,2,2,0,A,40,
+3,19,2.5,20,1.5,4,3,0,A,35,WARMING UP
+4,22,2.2,20,2.0,6,4,0,A|B,35,DRIFT!
+5,25,2.0,20,3.0,8,5,0,A|B,30,
+6,28,1.8,20,3.0,8,6,0,A|B|C,30,DUAL GAP
+7,32,1.5,20,4.0,10,7,0,A|B|C,30,
+8,36,1.3,20,4.0,10,8,0,A|B|C|D,30,SHRINK!
+9,40,1.15,20,5.0,12,10,0,A|B|C|D,30,
+10,45,1.0,20,5.0,12,12,0.6,A|B|C|D|E,35,PULSE!
+11,50,0.85,20,6.0,14,14,0.5,A|B|C|D|E,35,INTENSE
+12,55,0.75,20,7.0,16,16,0.45,A|B|C|D|E,40,HARDCORE
+13,60,0.65,20,7.0,18,18,0.4,A|B|C|D|E,0,ENDLESS

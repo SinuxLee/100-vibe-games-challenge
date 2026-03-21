@@ -4,8 +4,8 @@ import { ObstacleManager } from '../../src/systems/ObstacleManager';
 import { DifficultyDirector } from '../../src/systems/DifficultyDirector';
 import {
   ObstacleType, OBSTACLE_SPAWN_Y, GAME_WIDTH,
-  PLAYER_MAX_SPEED, PLAYER_WIDTH,
-  MAX_CONSECUTIVE_SAME,
+  PLAYER_MAX_SPEED, PLAYER_WIDTH, PLAYER_START_Y,
+  MAX_CONSECUTIVE_SAME, INITIAL_SPAWN_DELAY,
 } from '../../src/constants';
 
 describe('ObstacleManager', () => {
@@ -24,21 +24,25 @@ describe('ObstacleManager', () => {
   });
 
   describe('spawning', () => {
-    it('spawns obstacle after spawn interval elapses', () => {
-      const interval = director.getSpawnInterval();
-      manager.update(interval + 0.01);
+    it('does not spawn during initial delay', () => {
+      manager.update(INITIAL_SPAWN_DELAY - 0.1);
+      expect(manager.getObstacles()).toHaveLength(0);
+    });
+
+    it('spawns obstacle after initial delay elapses', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       expect(manager.getObstacles().length).toBeGreaterThanOrEqual(1);
     });
 
     it('does not spawn additional obstacle before next interval', () => {
-      const interval = director.getSpawnInterval();
-      manager.update(0.01);
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       expect(manager.getObstacles()).toHaveLength(1);
       manager.update(0.01);
       expect(manager.getObstacles()).toHaveLength(1);
     });
 
     it('spawns multiple obstacles over time', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       const interval = director.getSpawnInterval();
       for (let i = 0; i < 5; i++) {
         manager.update(interval + 0.01);
@@ -46,20 +50,20 @@ describe('ObstacleManager', () => {
       expect(manager.getObstacles().length).toBeGreaterThanOrEqual(3);
     });
 
-    it('spawned obstacles start near OBSTACLE_SPAWN_Y', () => {
-      manager.update(0.001);
+    it('spawned obstacles start at expected position after initial delay', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       const obs = manager.getObstacles();
       expect(obs.length).toBeGreaterThan(0);
       for (const o of obs) {
-        expect(o.logicalY).toBeCloseTo(OBSTACLE_SPAWN_Y, 0);
+        expect(o.logicalY).toBeLessThanOrEqual(OBSTACLE_SPAWN_Y);
+        expect(o.logicalY).toBeGreaterThan(OBSTACLE_SPAWN_Y - 60);
       }
     });
   });
 
   describe('obstacle removal', () => {
     it('removes obstacles that go off screen', () => {
-      const interval = director.getSpawnInterval();
-      manager.update(interval + 0.01);
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       expect(manager.getObstacles().length).toBe(1);
 
       const obs = manager.getObstacles()[0];
@@ -71,8 +75,7 @@ describe('ObstacleManager', () => {
 
   describe('reset', () => {
     it('clears all obstacles', () => {
-      const interval = director.getSpawnInterval();
-      manager.update(interval + 0.01);
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       expect(manager.getObstacles().length).toBeGreaterThan(0);
       manager.reset();
       expect(manager.getObstacles()).toHaveLength(0);
@@ -81,6 +84,7 @@ describe('ObstacleManager', () => {
 
   describe('pickType (via spawning at different times)', () => {
     it('only spawns SINGLE_GAP during easy period', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       const interval = director.getSpawnInterval();
       for (let i = 0; i < 5; i++) {
         manager.update(interval + 0.01);
@@ -92,6 +96,7 @@ describe('ObstacleManager', () => {
     });
 
     it('can spawn DRIFTING_GAP after 15s', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       director.update(16);
       const types = new Set<ObstacleType>();
       for (let i = 0; i < 30; i++) {
@@ -106,8 +111,8 @@ describe('ObstacleManager', () => {
 
   describe('fairness', () => {
     it('gap centers stay within reachable range', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       director.update(20);
-      let lastGapX = GAME_WIDTH / 2;
 
       for (let i = 0; i < 20; i++) {
         const interval = director.getSpawnInterval();
@@ -118,7 +123,7 @@ describe('ObstacleManager', () => {
       for (let i = 1; i < obstacles.length; i++) {
         const obs = obstacles[i];
         const scrollSpd = director.getScrollSpeed();
-        const travelTime = (OBSTACLE_SPAWN_Y - 20) / scrollSpd;
+        const travelTime = (OBSTACLE_SPAWN_Y - PLAYER_START_Y) / scrollSpd;
         const maxReachable = PLAYER_MAX_SPEED * travelTime;
         const diff = Math.abs(obs.gapCenterX - obstacles[i - 1].gapCenterX);
         expect(diff).toBeLessThanOrEqual(maxReachable + 1);
@@ -126,6 +131,7 @@ describe('ObstacleManager', () => {
     });
 
     it('gap center stays within valid range (halfGap to GAME_WIDTH - halfGap)', () => {
+      manager.update(INITIAL_SPAWN_DELAY + 0.01);
       director.update(30);
       for (let i = 0; i < 20; i++) {
         const interval = director.getSpawnInterval();

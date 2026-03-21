@@ -5,6 +5,8 @@ import { MenuScene } from './scenes/MenuScene';
 import { GameScene } from './scenes/GameScene';
 import { HUDScene } from './scenes/HUDScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { LevelCompleteScene } from './scenes/LevelCompleteScene';
+import { TutorialScene } from './scenes/TutorialScene';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, COLOR_DARK_BG } from './constants';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -27,7 +29,7 @@ const config: Phaser.Types.Core.GameConfig = {
   input: {
     activePointers: 1,
   },
-  scene: [BootScene, PreloadScene, MenuScene, GameScene, HUDScene, GameOverScene],
+  scene: [BootScene, PreloadScene, MenuScene, TutorialScene, GameScene, HUDScene, GameOverScene, LevelCompleteScene],
 };
 
 const game = new Phaser.Game(config);

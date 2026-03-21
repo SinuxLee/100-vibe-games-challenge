@@ -71,6 +71,12 @@ test.describe('Game Boot & Menu', () => {
 test.describe('Gameplay', () => {
   async function startGame(page: import('@playwright/test').Page) {
     await page.goto('/');
+    await page.evaluate(() => {
+      const save = JSON.parse(localStorage.getItem('neon_dodge_save') || '{}');
+      save.tutorialCompleted = true;
+      localStorage.setItem('neon_dodge_save', JSON.stringify(save));
+    });
+    await page.reload();
     await waitForPhaser(page);
 
     await page.waitForFunction(() => {
@@ -186,6 +192,12 @@ test.describe('Gameplay', () => {
 test.describe('Game Over', () => {
   test('death transitions to GameOver scene', async ({ page }) => {
     await page.goto('/');
+    await page.evaluate(() => {
+      const save = JSON.parse(localStorage.getItem('neon_dodge_save') || '{}');
+      save.tutorialCompleted = true;
+      localStorage.setItem('neon_dodge_save', JSON.stringify(save));
+    });
+    await page.reload();
     await waitForPhaser(page);
 
     await page.waitForFunction(() => {

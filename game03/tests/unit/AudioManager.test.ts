@@ -50,6 +50,7 @@ describe('AudioManager', () => {
       longestTime: 0,
       soundEnabled: true,
       vibrateEnabled: true,
+      tutorialCompleted: false,
     });
 
     AudioManager.init(mockScene as any);
@@ -70,6 +71,7 @@ describe('AudioManager', () => {
         longestTime: 0,
         soundEnabled: false,
         vibrateEnabled: true,
+        tutorialCompleted: false,
       });
       AudioManager.init(mockScene as any);
       expect(AudioManager.isMuted()).toBe(true);
@@ -158,12 +160,25 @@ describe('AudioManager', () => {
       expect(mockAudioContext.createOscillator).toHaveBeenCalled();
     });
 
+    it('playLevelComplete creates oscillators', () => {
+      AudioManager.playLevelComplete();
+      expect(mockAudioContext.createOscillator).toHaveBeenCalled();
+    });
+
+    it('playComboMilestone creates oscillators', () => {
+      AudioManager.playComboMilestone();
+      expect(mockAudioContext.createOscillator).toHaveBeenCalled();
+    });
+
     it('synth methods do nothing when muted', () => {
       AudioManager.toggleMute();
       mockAudioContext.createOscillator.mockClear();
+      mockAudioContext.createBufferSource.mockClear();
       AudioManager.playStart();
       AudioManager.playSlide();
       AudioManager.playPassThrough();
+      AudioManager.playLevelComplete();
+      AudioManager.playComboMilestone();
       expect(mockAudioContext.createOscillator).not.toHaveBeenCalled();
     });
   });
@@ -187,6 +202,7 @@ describe('AudioManager', () => {
         longestTime: 0,
         soundEnabled: true,
         vibrateEnabled: false,
+        tutorialCompleted: false,
       });
 
       const vibrateMock = vi.fn();
